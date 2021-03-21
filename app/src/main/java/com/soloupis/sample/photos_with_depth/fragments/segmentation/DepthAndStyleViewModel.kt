@@ -8,9 +8,6 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.get
 import org.tensorflow.lite.task.vision.segmenter.ImageSegmenter
@@ -91,14 +88,14 @@ class DepthAndStyleViewModel(application: Application) :
         _inferenceDone.postValue(true)*/
     }
 
-    fun performOcr(bitmap: Bitmap, context: Context): Pair<IntArray, Long> {
+    fun performDepthAndStyleProcedure(bitmap: Bitmap, context: Context): Pair<IntArray, Long> {
         try {
             // Initialization
             startTime = SystemClock.uptimeMillis()
 
             // Run inference
-            val result = depthAndStyleModelExecutor.executeOcrWithMLBinding(bitmap, context)
-            Log.e("RESULT", result.toString())
+            outputArray = depthAndStyleModelExecutor.executeProcedureForPhotosWithDepth(bitmap, context)
+            Log.e("RESULT", outputArray.toString())
 
             inferenceTime = SystemClock.uptimeMillis() - startTime
         } catch (e: IOException) {
@@ -107,7 +104,6 @@ class DepthAndStyleViewModel(application: Application) :
 
         return Pair(outputArray, inferenceTime)
     }
-
 
     fun cropBitmapWithMask(original: Bitmap, mask: Bitmap?): Bitmap? {
         if (mask == null

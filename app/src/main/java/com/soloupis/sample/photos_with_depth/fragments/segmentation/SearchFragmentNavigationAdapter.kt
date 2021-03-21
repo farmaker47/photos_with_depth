@@ -116,8 +116,6 @@ class SearchFragmentNavigationAdapter(
     private fun getBitmapFromAsset(context: Context, path: String): Bitmap =
             context.assets.open(path).use { BitmapFactory.decodeStream(it) }
 
-    companion object {
-
-    }
+    companion object {}
 
 }

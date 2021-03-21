@@ -27,8 +27,8 @@
         tools:layout="@layout/fragment_camera">
 
         <action
-            android:id="@+id/action_camera_to_selfie2segmentation"
-            app:destination="@id/selfie2segmentation_fragment" />
+            android:id="@+id/action_camera_to_photos_with_depth"
+            app:destination="@id/photos_with_depth_fragment" />
 
         <action
             android:id="@+id/action_camera_to_permissions"
@@ -41,9 +41,9 @@
     <!-- 3. Run inference on original image Bitmap and create output image -->
     <!-- Display both original input and translated output images in UI -->
     <fragment
-        android:id="@+id/selfie2segmentation_fragment"
+        android:id="@+id/photos_with_depth_fragment"
         android:name="com.soloupis.sample.photos_with_depth.fragments.segmentation.DepthAndStyleFragment"
-        android:label="Selfie2SegmentationFragment">
+        android:label="PhotosWithDepthFragment">
         <argument
             android:name="root_dir"
             app:argType="string" />

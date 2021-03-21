@@ -51,7 +51,7 @@ class CameraFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentCameraBinding.inflate(inflater)
         binding.lifecycleOwner = this
@@ -178,7 +178,7 @@ class CameraFragment : Fragment() {
 
                     // Pass the file path to the next screen
                     val action =
-                        CameraFragmentDirections.actionCameraToSelfie2segmentation(filePath)
+                        CameraFragmentDirections.actionCameraToPhotosWithDepth(filePath)
                     findNavController().navigate(action)
 
                 }
@@ -194,7 +194,7 @@ class CameraFragment : Fragment() {
             if (filePath != null) {
 
                 val action =
-                    CameraFragmentDirections.actionCameraToSelfie2segmentation(
+                    CameraFragmentDirections.actionCameraToPhotosWithDepth(
                         filePath.toString()
                     )
                 findNavController().navigate(action)

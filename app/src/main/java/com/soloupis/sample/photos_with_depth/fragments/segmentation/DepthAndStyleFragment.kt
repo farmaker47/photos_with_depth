@@ -79,7 +79,7 @@ class DepthAndStyleFragment : Fragment(),
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentDepthAndStyleBinding.inflate(inflater)
         binding.lifecycleOwner = this
@@ -131,6 +131,7 @@ class DepthAndStyleFragment : Fragment(),
         return binding.root
     }
 
+
     private fun observeViewModel() {
 
         viewModel.styledBitmap.observe(
@@ -149,10 +150,11 @@ class DepthAndStyleFragment : Fragment(),
                     )
 
                     binding.imageviewStyled.setImageBitmap(
-                        viewModel.cropBitmapWithMaskForStyle(
+                        finalBitmapWithStyle
+                        /*viewModel.cropBitmapWithMaskForStyle(
                             resultImage.styledImage,
                             outputBitmapFinal
-                        )
+                        )*/
                     )//selfieBitmap
                 }
             }
@@ -193,7 +195,7 @@ class DepthAndStyleFragment : Fragment(),
             imageview_input.setImageBitmap(selfieBitmap)
 
             lifecycleScope.launch(Dispatchers.Default) {
-                val (intArray, inferenceTime) = viewModel.performOcr(
+                val (intArray, inferenceTime) = viewModel.performDepthAndStyleProcedure(
                     selfieBitmap,
                     requireActivity()
                 )
@@ -230,7 +232,7 @@ class DepthAndStyleFragment : Fragment(),
             binding.imageviewInput.visibility = View.VISIBLE
 
             lifecycleScope.launch(Dispatchers.Default) {
-                val (intArray, inferenceTime) = viewModel.performOcr(
+                val (intArray, inferenceTime) = viewModel.performDepthAndStyleProcedure(
                     loadedBitmap,
                     requireActivity()
                 )

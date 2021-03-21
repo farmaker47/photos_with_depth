@@ -59,7 +59,7 @@ class DepthAndStyleModelExecutor(
     }
 
     companion object {
-        private const val TAG = "StyleTransferMExec"
+        private const val TAG = "PhotosWithDepthProcedure"
         private const val STYLE_IMAGE_SIZE = 256
         private const val CONTENT_IMAGE_SIZE = 384
         private const val BOTTLENECK_SIZE = 100
@@ -131,7 +131,7 @@ class DepthAndStyleModelExecutor(
     }*/
 
     // Function for ML Binding
-    fun executeOcrWithMLBinding(
+    fun executeProcedureForPhotosWithDepth(
         contentImage: Bitmap,
         context: Context
     ): IntArray {

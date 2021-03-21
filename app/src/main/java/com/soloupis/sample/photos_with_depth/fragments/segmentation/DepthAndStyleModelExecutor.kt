@@ -23,7 +23,7 @@ data class ModelExecutionResult(
 )
 
 @SuppressWarnings("GoodTime")
-class OcrModelExecutor(
+class DepthAndStyleModelExecutor(
         context: Context,
         private var useGPU: Boolean = false
 ) {

@@ -7,8 +7,8 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.soloupis.sample.photos_with_depth.fragments.StyleFragment
-import com.soloupis.sample.photos_with_depth.fragments.segmentation.OcrFragment
-import com.soloupis.sample.photos_with_depth.fragments.segmentation.OcrFragmentDirections
+import com.soloupis.sample.photos_with_depth.fragments.segmentation.DepthAndStyleFragment
+import com.soloupis.sample.photos_with_depth.fragments.segmentation.DepthAndStyleFragmentDirections
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity(),
 
         // Navigate back to Camera fragment
         imageViewBack.setOnClickListener {
-            val action = OcrFragmentDirections.backHome()
+            val action = DepthAndStyleFragmentDirections.backHome()
             findNavController(R.id.fragment_container).navigate(action)
         }
 
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity(),
         // Find fragment and execute method
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
         val fragment= navHostFragment?.childFragmentManager?.fragments?.get(0)
-        (fragment as OcrFragment).methodToStartStyleTransfer(item)
+        (fragment as DepthAndStyleFragment).methodToStartStyleTransfer(item)
 
     }
 

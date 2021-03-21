@@ -16,7 +16,7 @@ import org.koin.core.get
 import org.tensorflow.lite.task.vision.segmenter.ImageSegmenter
 import java.io.IOException
 
-class OcrViewModel(application: Application) :
+class DepthAndStyleViewModel(application: Application) :
         AndroidViewModel(application),
         KoinComponent {
 
@@ -46,7 +46,7 @@ class OcrViewModel(application: Application) :
     val inferenceDone: LiveData<Boolean>
         get() = _inferenceDone
 
-    val ocrModelExecutor: OcrModelExecutor
+    val depthAndStyleModelExecutor:DepthAndStyleModelExecutor
 
     init {
 
@@ -54,7 +54,7 @@ class OcrViewModel(application: Application) :
 
         _currentList.addAll(application.assets.list("thumbnails")!!)
 
-        ocrModelExecutor = get()
+        depthAndStyleModelExecutor = get()
 
     }
 
@@ -97,7 +97,7 @@ class OcrViewModel(application: Application) :
             startTime = SystemClock.uptimeMillis()
 
             // Run inference
-            val result = ocrModelExecutor.executeOcrWithMLBinding(bitmap, context)
+            val result = depthAndStyleModelExecutor.executeOcrWithMLBinding(bitmap, context)
             Log.e("RESULT", result.toString())
 
             inferenceTime = SystemClock.uptimeMillis() - startTime
@@ -165,7 +165,7 @@ class OcrViewModel(application: Application) :
 
     override fun onCleared() {
         super.onCleared()
-        ocrModelExecutor.close()
+        depthAndStyleModelExecutor.close()
     }
 
 }

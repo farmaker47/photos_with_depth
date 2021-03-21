@@ -42,7 +42,7 @@
     <!-- Display both original input and translated output images in UI -->
     <fragment
         android:id="@+id/selfie2segmentation_fragment"
-        android:name="com.soloupis.sample.photos_with_depth.fragments.segmentation.OcrFragment"
+        android:name="com.soloupis.sample.photos_with_depth.fragments.segmentation.DepthAndStyleFragment"
         android:label="Selfie2SegmentationFragment">
         <argument
             android:name="root_dir"

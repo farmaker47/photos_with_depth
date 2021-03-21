@@ -15,10 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.soloupis.sample.photos_with_depth.MainActivity
 import com.soloupis.sample.photos_with_depth.R
-import com.soloupis.sample.photos_with_depth.databinding.FragmentSelfie2segmentationBinding
+import com.soloupis.sample.photos_with_depth.databinding.FragmentDepthAndStyleBinding
 import com.soloupis.sample.photos_with_depth.fragments.StyleFragment
 import com.soloupis.sample.photos_with_depth.utils.ImageUtils
-import kotlinx.android.synthetic.main.fragment_selfie2segmentation.*
+import kotlinx.android.synthetic.main.fragment_depth_and_style.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,32 +31,32 @@ import java.util.*
 
 /**
  * A simple [Fragment] subclass.
- * Use the [OcrFragment.newInstance] factory method to
+ * Use the [DepthAndStyleFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
  * This is where we show both the captured input image and the output image
  */
-class OcrFragment : Fragment(),
+class DepthAndStyleFragment : Fragment(),
     SearchFragmentNavigationAdapter.SearchClickItemListener,
     StyleFragment.OnListFragmentInteractionListener {
 
-    private val args: OcrFragmentArgs by navArgs()
+    private val args: DepthAndStyleFragmentArgs by navArgs()
     private lateinit var filePath: String
     private var finalBitmap: Bitmap? = null
     private var finalBitmapWithStyle: Bitmap? = null
 
     // Koin inject ViewModel
-    private val viewModel: OcrViewModel by viewModel()
+    private val viewModel: DepthAndStyleViewModel by viewModel()
 
     // DataBinding
-    private lateinit var binding: FragmentSelfie2segmentationBinding
+    private lateinit var binding: FragmentDepthAndStyleBinding
     private lateinit var photoFile: File
 
     // RecyclerView
     private lateinit var mSearchFragmentNavigationAdapter: SearchFragmentNavigationAdapter
 
     //
-    private lateinit var ocrModelExecutor: OcrModelExecutor
+    private lateinit var depthAndStyleModelExecutor: DepthAndStyleModelExecutor
 
     private lateinit var scaledBitmap: Bitmap
     private lateinit var selfieBitmap: Bitmap
@@ -81,7 +81,7 @@ class OcrFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentSelfie2segmentationBinding.inflate(inflater)
+        binding = FragmentDepthAndStyleBinding.inflate(inflater)
         binding.lifecycleOwner = this
         binding.viewModelXml = viewModel
 
@@ -101,7 +101,7 @@ class OcrFragment : Fragment(),
         }
 
         // Initialize class with Koin
-        ocrModelExecutor = get()
+        depthAndStyleModelExecutor = get()
 
         getKoin().setProperty(getString(R.string.koinStyle), viewModel.stylename)
 

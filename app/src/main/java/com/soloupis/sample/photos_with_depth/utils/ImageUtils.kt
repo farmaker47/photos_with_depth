@@ -160,7 +160,8 @@ abstract class ImageUtils {
             mean: Float = 0.0f,
             std: Float = 255.0f
         ): ByteBuffer {
-            val bitmap = scaleBitmapAndKeepRatio(bitmapIn, width, height)
+            //val bitmap = scaleBitmapAndKeepRatio(bitmapIn, width, height)
+            val bitmap = Bitmap.createScaledBitmap(bitmapIn, width, height, true)
             val inputImage = ByteBuffer.allocateDirect(1 * width * height * 3 * 4)
             inputImage.order(ByteOrder.nativeOrder())
             inputImage.rewind()

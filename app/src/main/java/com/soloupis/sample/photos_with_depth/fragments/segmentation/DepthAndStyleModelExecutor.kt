@@ -41,7 +41,7 @@ class DepthAndStyleModelExecutor(
     companion object {
         private const val TAG = "PhotosWithDepthProcedure"
         private const val CONTENT_IMAGE_SIZE = 384
-        private const val DEPTH_MODEL = "3D_depth.tflite"
+        private const val DEPTH_MODEL = "3D_depth_new.tflite"
     }
 
     init {
@@ -63,7 +63,7 @@ class DepthAndStyleModelExecutor(
             preProcessTime = SystemClock.uptimeMillis()
             //val loadedImage = TensorImage.fromBitmap(contentImage).tensorBuffer
             val styleBitmap =
-                ImageUtils.loadBitmapFromResources(context, "thumbnails/zkate.jpg")
+                ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
             val inputStyle =
                 ImageUtils.bitmapToByteBuffer(styleBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
 
@@ -80,6 +80,8 @@ class DepthAndStyleModelExecutor(
             // Runs model inference and gets result.
             findDepthTime = SystemClock.uptimeMillis()
             val outputsPredict = interprerDepth.run(inputStyle, outputs)
+            Log.d(TAG, outputs[0][0][0].contentToString())
+            Log.d(TAG, outputs[0][0][0].size.toString())
             findDepthTime = SystemClock.uptimeMillis() - findDepthTime
             Log.d(TAG, "Find depth time: $findDepthTime")
 

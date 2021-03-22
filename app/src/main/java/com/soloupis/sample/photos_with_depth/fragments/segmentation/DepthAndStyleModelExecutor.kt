@@ -7,7 +7,6 @@ import android.util.Log
 import com.soloupis.sample.photos_with_depth.utils.ImageUtils
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.GpuDelegate
-import org.tensorflow.lite.support.image.TensorImage
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
@@ -33,7 +32,7 @@ class DepthAndStyleModelExecutor(
     private var numberThreads = 4
     private var fullExecutionTime = 0L
     private var preProcessTime = 0L
-    private var stylePredictTime = 0L
+    private var findDepthTime = 0L
     private var styleTransferTime = 0L
     private var postProcessTime = 0L
     private var interprerDepth: Interpreter
@@ -58,30 +57,37 @@ class DepthAndStyleModelExecutor(
     ): IntArray {
         try {
             Log.i(TAG, "running models")
-
             fullExecutionTime = SystemClock.uptimeMillis()
 
-            preProcessTime = SystemClock.uptimeMillis()
             // Creates inputs for reference.
+            preProcessTime = SystemClock.uptimeMillis()
+            //val loadedImage = TensorImage.fromBitmap(contentImage).tensorBuffer
+            val styleBitmap =
+                ImageUtils.loadBitmapFromResources(context, "thumbnails/zkate.jpg")
+            val inputStyle =
+                ImageUtils.bitmapToByteBuffer(styleBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
 
-            val loadedImage = TensorImage.fromBitmap(contentImage).tensorBuffer
+            val outputs = Array(1) {
+                Array(1) {
+                    Array(384) {
+                        FloatArray(384)
+                    }
+                }
+            }
             preProcessTime = SystemClock.uptimeMillis() - preProcessTime
+            Log.d(TAG, "Pre process time: $preProcessTime")
 
-            stylePredictTime = SystemClock.uptimeMillis()
             // Runs model inference and gets result.
-            Log.d(TAG, "Style Predict Time to run: $stylePredictTime")
-            //val outputsPredict = interprerDepth.run...........
-            stylePredictTime = SystemClock.uptimeMillis() - stylePredictTime
-            Log.d(TAG, "Style Predict Time to run: $stylePredictTime")
+            findDepthTime = SystemClock.uptimeMillis()
+            val outputsPredict = interprerDepth.run(inputStyle, outputs)
+            findDepthTime = SystemClock.uptimeMillis() - findDepthTime
+            Log.d(TAG, "Find depth time: $findDepthTime")
 
-            styleTransferTime = SystemClock.uptimeMillis()
-            // Runs model inference and gets result.
-            styleTransferTime = SystemClock.uptimeMillis() - styleTransferTime
-            Log.d(TAG, "Style apply Time to run: $styleTransferTime")
-
+            // Post process time
             postProcessTime = SystemClock.uptimeMillis()
             postProcessTime = SystemClock.uptimeMillis() - postProcessTime
 
+            // Full execution time
             fullExecutionTime = SystemClock.uptimeMillis() - fullExecutionTime
             Log.d(TAG, "Time to run everything: $fullExecutionTime")
 
@@ -146,7 +152,7 @@ class DepthAndStyleModelExecutor(
         sb.append("GPU enabled: $useGPU\n")
         sb.append("Number of threads: $numberThreads\n")
         sb.append("Pre-process execution time: $preProcessTime ms\n")
-        sb.append("Predicting style execution time: $stylePredictTime ms\n")
+        sb.append("Predicting style execution time: $findDepthTime ms\n")
         sb.append("Transferring style execution time: $styleTransferTime ms\n")
         sb.append("Post-process execution time: $postProcessTime ms\n")
         sb.append("Full execution time: $fullExecutionTime ms\n")

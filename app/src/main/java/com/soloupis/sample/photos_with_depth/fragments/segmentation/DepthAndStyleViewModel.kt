@@ -53,6 +53,8 @@ class DepthAndStyleViewModel(application: Application) :
 
         depthAndStyleModelExecutor = get()
 
+        outputArray = intArrayOf()
+
     }
 
     fun setStyleName(string: String) {

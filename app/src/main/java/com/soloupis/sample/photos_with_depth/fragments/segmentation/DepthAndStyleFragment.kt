@@ -144,18 +144,14 @@ class DepthAndStyleFragment : Fragment(),
                         .into(binding.imageViewStyled)*/
 
                     // Set this to use with save function
-                    finalBitmapWithStyle = viewModel.cropBitmapWithMaskForStyle(
+                    /*finalBitmapWithStyle = viewModel.cropBitmapWithMaskForStyle(
                         resultImage.styledImage,
                         outputBitmapFinal
                     )
 
                     binding.imageviewStyled.setImageBitmap(
                         finalBitmapWithStyle
-                        /*viewModel.cropBitmapWithMaskForStyle(
-                            resultImage.styledImage,
-                            outputBitmapFinal
-                        )*/
-                    )//selfieBitmap
+                    )*///selfieBitmap
                 }
             }
         )
@@ -268,15 +264,6 @@ class DepthAndStyleFragment : Fragment(),
         //showStyledImage("mona.JPG")
     }
 
-    private fun showStyledImage(style: String) {
-        lifecycleScope.launch(Dispatchers.Default) {
-
-            viewModel.onApplyStyle(
-                requireActivity(), scaledBitmap, style
-            )
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         // clean up coroutine job
@@ -300,7 +287,7 @@ class DepthAndStyleFragment : Fragment(),
             MainActivity.getOutputDirectory(requireContext()),
             SimpleDateFormat(
                 FILENAME_FORMAT, Locale.US
-            ).format(System.currentTimeMillis()) + "_segmentation_and_style_transfer.jpg"
+            ).format(System.currentTimeMillis()) + "_photo_with_depth.jpg"
         )
 
         ImageUtils.saveBitmap(bitmap, file)
@@ -312,10 +299,10 @@ class DepthAndStyleFragment : Fragment(),
     }
 
     companion object {
-        private const val TAG = "SegmentationAndStyleTransferFragment"
+        private const val TAG = "PhotosAndDepthFragment"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-        const val MODEL_WIDTH = 256
-        const val MODEL_HEIGHT = 256
+        const val MODEL_WIDTH = 384
+        const val MODEL_HEIGHT = 384
     }
 
     override fun onListItemClick(itemIndex: Int, sharedImage: ImageView?, type: String) {
@@ -354,5 +341,14 @@ class DepthAndStyleFragment : Fragment(),
         showStyledImage(item)
         getKoin().setProperty(getString(R.string.koinStyle), item)
         viewModel.setStyleName(item)
+    }
+
+    private fun showStyledImage(style: String) {
+        lifecycleScope.launch(Dispatchers.Default) {
+
+            viewModel.onApplyStyle(
+                requireActivity(), scaledBitmap, style
+            )
+        }
     }
 }

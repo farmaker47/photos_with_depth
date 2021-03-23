@@ -79,7 +79,7 @@ class DepthAndStyleModelExecutor(
 
             // Runs model inference and gets result.
             findDepthTime = SystemClock.uptimeMillis()
-            val outputsPredict = interprerDepth.run(inputStyle, outputs)
+            interprerDepth.run(inputStyle, outputs)
             Log.d(TAG, outputs[0][0][0].contentToString())
             Log.d(TAG, outputs[0][0][0].size.toString())
             findDepthTime = SystemClock.uptimeMillis() - findDepthTime

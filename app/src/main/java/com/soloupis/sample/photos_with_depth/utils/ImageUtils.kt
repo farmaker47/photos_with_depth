@@ -208,12 +208,12 @@ abstract class ImageUtils {
             val conf = Bitmap.Config.ARGB_8888 // see other conf types
             val styledImage = Bitmap.createBitmap(imageWidth, imageHeight, conf)
 
-            for (x in imageArray[0].indices) {
-                for (y in imageArray[0][0].indices) {
+            for (x in imageArray[0][0].indices) {
+                for (y in imageArray[0][0][0].indices) {
                     val color = Color.rgb(
-                        ((imageArray[0][x][y][0] * 255).toInt()),
-                        ((imageArray[0][x][y][1] * 255).toInt()),
-                        (imageArray[0][x][y][2] * 255).toInt()
+                        ((imageArray[0][0][x][y] * 255).toInt()),
+                        ((imageArray[0][0][x][y] * 255).toInt()),
+                        (imageArray[0][0][x][y] * 255).toInt()
                     )
 
                     // this y, x is in the correct order!!!

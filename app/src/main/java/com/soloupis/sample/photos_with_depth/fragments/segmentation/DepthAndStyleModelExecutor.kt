@@ -29,7 +29,7 @@ class DepthAndStyleModelExecutor(
     private var useGPU: Boolean = false
 ) {
 
-    private var numberThreads = 4
+    private var numberThreads = 8
     private var fullExecutionTime = 0L
     private var preProcessTime = 0L
     private var findDepthTime = 0L
@@ -54,7 +54,7 @@ class DepthAndStyleModelExecutor(
     fun executeProcedureForPhotosWithDepth(
         contentImage: Bitmap,
         context: Context
-    ): IntArray {
+    ): Bitmap {
         try {
             Log.i(TAG, "running models")
             fullExecutionTime = SystemClock.uptimeMillis()
@@ -87,23 +87,28 @@ class DepthAndStyleModelExecutor(
 
             // Post process time
             postProcessTime = SystemClock.uptimeMillis()
+            val finalBitmap = ImageUtils.convertArrayToBitmap(
+                outputs, CONTENT_IMAGE_SIZE,
+                CONTENT_IMAGE_SIZE
+            )
             postProcessTime = SystemClock.uptimeMillis() - postProcessTime
+            Log.d(TAG, "Post process time: $postProcessTime")
 
             // Full execution time
             fullExecutionTime = SystemClock.uptimeMillis() - fullExecutionTime
             Log.d(TAG, "Time to run everything: $fullExecutionTime")
 
-            return intArrayOf()//outputsPredict.arrayOutputAsTensorBuffer.intArray
+            return finalBitmap//outputsPredict.arrayOutputAsTensorBuffer.intArray
         } catch (e: Exception) {
             val exceptionLog = "something went wrong: ${e.message}"
             Log.e("EXECUTOR", exceptionLog)
 
-            /*val emptyBitmap =
+            val emptyBitmap =
                 ImageUtils.createEmptyBitmap(
                     CONTENT_IMAGE_SIZE,
                     CONTENT_IMAGE_SIZE
-                )*/
-            return intArrayOf()
+                )
+            return emptyBitmap
         }
     }
 

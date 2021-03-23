@@ -19,7 +19,7 @@ class DepthAndStyleViewModel(application: Application) :
 
     private lateinit var imageSegmenter: ImageSegmenter
     private lateinit var scaledMaskBitmap: Bitmap
-    private lateinit var outputArray: IntArray
+    private lateinit var outputBitmap: Bitmap
     var startTime: Long = 0L
     var inferenceTime = 0L
     lateinit var scaledBitmapObject: Bitmap
@@ -52,8 +52,6 @@ class DepthAndStyleViewModel(application: Application) :
         _currentList.addAll(application.assets.list("thumbnails")!!)
 
         depthAndStyleModelExecutor = get()
-
-        outputArray = intArrayOf()
 
     }
 
@@ -90,21 +88,21 @@ class DepthAndStyleViewModel(application: Application) :
         _inferenceDone.postValue(true)*/
     }
 
-    fun performDepthAndStyleProcedure(bitmap: Bitmap, context: Context): Pair<IntArray, Long> {
+    fun performDepthAndStyleProcedure(bitmap: Bitmap, context: Context): Pair<Bitmap, Long> {
         try {
             // Initialization
             startTime = SystemClock.uptimeMillis()
 
             // Run inference
-            outputArray = depthAndStyleModelExecutor.executeProcedureForPhotosWithDepth(bitmap, context)
-            Log.e("RESULT", outputArray.toString())
+            outputBitmap = depthAndStyleModelExecutor.executeProcedureForPhotosWithDepth(bitmap, context)
+            Log.e("RESULT", outputBitmap.toString())
 
             inferenceTime = SystemClock.uptimeMillis() - startTime
         } catch (e: IOException) {
             Log.e("Depth", "Error: ", e)
         }
 
-        return Pair(outputArray, inferenceTime)
+        return Pair(outputBitmap, inferenceTime)
     }
 
     fun cropBitmapWithMask(original: Bitmap, mask: Bitmap?): Bitmap? {

@@ -61,7 +61,7 @@ class DepthAndStyleFragment : Fragment(),
     private lateinit var scaledBitmap: Bitmap
     private lateinit var selfieBitmap: Bitmap
     private lateinit var loadedBitmap: Bitmap
-    private lateinit var outputArray: IntArray
+    private lateinit var outputBitmap: Bitmap
 
     private var outputBitmapFinal: Bitmap? = null
     private var inferenceTime: Long = 0L
@@ -191,26 +191,25 @@ class DepthAndStyleFragment : Fragment(),
             imageview_input.setImageBitmap(selfieBitmap)
 
             lifecycleScope.launch(Dispatchers.Default) {
-                val (intArray, inferenceTime) = viewModel.performDepthAndStyleProcedure(
+                val (bitmap, inferenceTime) = viewModel.performDepthAndStyleProcedure(
                     selfieBitmap,
                     requireActivity()
                 )
-                outputArray = intArray
+                outputBitmap = bitmap
                 withContext(Dispatchers.Main) {
 
                     // Make input ImageView gone
-                    /*binding.imageviewInput.visibility = View.GONE
+                    binding.imageviewInput.visibility = View.GONE
 
                     updateUI(outputBitmap, inferenceTime)
                     finalBitmap = outputBitmap
 
                     // Make output Image visible
-                    binding.imageviewOutput.visibility = View.VISIBLE*/
+                    binding.imageviewOutput.visibility = View.VISIBLE
 
                 }
             }
         } else {
-
             // When selecting image from gallery
             loadedBitmap =
                 BitmapFactory.decodeStream(
@@ -228,21 +227,21 @@ class DepthAndStyleFragment : Fragment(),
             binding.imageviewInput.visibility = View.VISIBLE
 
             lifecycleScope.launch(Dispatchers.Default) {
-                val (intArray, inferenceTime) = viewModel.performDepthAndStyleProcedure(
+                val (bitmap, inferenceTime) = viewModel.performDepthAndStyleProcedure(
                     loadedBitmap,
                     requireActivity()
                 )
-                outputArray = intArray
+                outputBitmap = bitmap
                 withContext(Dispatchers.Main) {
 
-                    /*// Make input ImageView gone
+                    // Make input ImageView gone
                     binding.imageviewInput.visibility = View.GONE
 
                     updateUI(outputBitmap, inferenceTime)
                     finalBitmap = outputBitmap
 
                     // Make output Image visible
-                    binding.imageviewOutput.visibility = View.VISIBLE*/
+                    binding.imageviewOutput.visibility = View.VISIBLE
 
                 }
             }
@@ -254,7 +253,7 @@ class DepthAndStyleFragment : Fragment(),
     private fun updateUI(outputBitmap: Bitmap?, inferenceTime: Long) {
         progressbar.visibility = View.GONE
         imageview_input.visibility = View.INVISIBLE
-        Glide.with(imageview_output.context)
+        Glide.with(requireActivity())
             .load(outputBitmap)
             .fitCenter()
             .into(imageview_output)

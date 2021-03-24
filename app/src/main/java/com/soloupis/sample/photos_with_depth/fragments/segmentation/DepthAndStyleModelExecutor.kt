@@ -62,15 +62,17 @@ class DepthAndStyleModelExecutor(
             // Creates inputs for reference.
             preProcessTime = SystemClock.uptimeMillis()
             //val loadedImage = TensorImage.fromBitmap(contentImage).tensorBuffer
-            val styleBitmap =
-                ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
-            val inputStyle =
-                ImageUtils.bitmapToByteBuffer(styleBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
+            var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
+            //val inputStyle = ImageUtils.bitmapToByteBuffer(loadedBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
+            loadedBitmap = Bitmap.createScaledBitmap(loadedBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE, true)
+
+            val inputStyle = ImageUtils.bitmapToFloatArray(loadedBitmap)
+            Log.i(TAG, inputStyle[0][0][0].contentToString())
 
             val outputs = Array(1) {
                 Array(1) {
-                    Array(384) {
-                        FloatArray(384)
+                    Array(CONTENT_IMAGE_SIZE) {
+                        FloatArray(CONTENT_IMAGE_SIZE)
                     }
                 }
             }

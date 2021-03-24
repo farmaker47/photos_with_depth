@@ -17,11 +17,7 @@
 package com.soloupis.sample.photos_with_depth.utils
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.Matrix
-import android.graphics.RectF
+import android.graphics.*
 import android.media.ExifInterface
 import java.io.File
 import java.io.FileOutputStream
@@ -29,6 +25,8 @@ import java.io.IOException
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.math.abs
+
 
 /**
  * Collection of image reading and manipulation utilities in the form of static functions.
@@ -153,6 +151,41 @@ abstract class ImageUtils {
             )
         }
 
+        fun cropBitmap(bitmap: Bitmap): Bitmap {
+            val bitmapRatio = bitmap.height.toFloat() / bitmap.width.toFloat()
+            val modelInputRatio = 1.0f
+            val maxDifference = 1.0E-5
+            var cropHeight = modelInputRatio - bitmapRatio
+            return if (abs(cropHeight) < maxDifference) {
+                bitmap
+            } else {
+                val var10000: Bitmap
+                val croppedBitmap: Bitmap
+                if (modelInputRatio < bitmapRatio) {
+                    cropHeight = bitmap.height.toFloat() - bitmap.width.toFloat() / modelInputRatio
+                    var10000 = Bitmap.createBitmap(
+                        bitmap,
+                        0,
+                        (cropHeight / 2.toFloat()).toInt(),
+                        bitmap.width,
+                        (bitmap.height.toFloat() - cropHeight).toInt()
+                    )
+
+                    croppedBitmap = var10000
+                } else {
+                    cropHeight = bitmap.width.toFloat() - bitmap.height.toFloat() * modelInputRatio
+                    var10000 = Bitmap.createBitmap(
+                        bitmap,
+                        (cropHeight / 2.toFloat()).toInt(), 0,
+                        (bitmap.width.toFloat() - cropHeight).toInt(), bitmap.height
+                    )
+
+                    croppedBitmap = var10000
+                }
+                croppedBitmap
+            }
+        }
+
         fun bitmapToByteBuffer(
             bitmapIn: Bitmap,
             width: Int,
@@ -160,8 +193,9 @@ abstract class ImageUtils {
             mean: Float = 0.0f,
             std: Float = 255.0f
         ): ByteBuffer {
-            //val bitmap = scaleBitmapAndKeepRatio(bitmapIn, width, height)
-            val bitmap = Bitmap.createScaledBitmap(bitmapIn, width, height, true)
+            var bitmap = cropBitmap(bitmapIn)
+            //bitmap = scaleBitmapAndKeepRatio(bitmapIn, width, height)
+            bitmap = Bitmap.createScaledBitmap(bitmapIn, width, height, true)
             val inputImage = ByteBuffer.allocateDirect(1 * width * height * 3 * 4)
             inputImage.order(ByteOrder.nativeOrder())
             inputImage.rewind()
@@ -171,7 +205,8 @@ abstract class ImageUtils {
             var pixel = 0
             for (y in 0 until height) {
                 for (x in 0 until width) {
-                    val value = intValues[pixel++]
+                    //val value = intValues[pixel++]
+                    val value = intValues[y * width + x]
 
                     // Normalize channel values to [-1.0, 1.0]. This requirement varies by
                     // model. For example, some models might require values to be normalized
@@ -182,8 +217,47 @@ abstract class ImageUtils {
                 }
             }
 
-            inputImage.rewind()
+            //inputImage.rewind()
             return inputImage
+        }
+
+        fun bitmapToFloatArray(bitmap: Bitmap):
+                Array<Array<Array<FloatArray>>> {
+            val width: Int = bitmap.width
+            val height: Int = bitmap.height
+            val intValues = IntArray(width * height)
+            bitmap.getPixels(intValues, 0, width, 0, 0, width, height)
+
+            /*for (k in 0..9) {
+                val pixelValue: Int = intValues[k]
+                Log.i("PIXEL_NUMBER", k.toString())
+                val R = Color.red(pixelValue) / 255.0f
+                Log.i("PIXEL_VALUE_R", R.toString())
+                val G = Color.green(pixelValue) / 255.0f
+                Log.i("PIXEL_VALUE_G", G.toString())
+                val B = Color.blue(pixelValue) / 255.0f
+                Log.i("PIXEL_VALUE_B", B.toString())
+            }*/
+
+            val floatArray = Array(1) {
+                Array(3) {
+                    Array(width) {
+                        FloatArray(height)
+                    }
+                }
+            }
+
+            for (i in 0 until width - 1) {
+                for (j in 0 until height - 1) {
+                    val pixelValue: Int = intValues[i * width + j]
+                    floatArray[0][0][i][j] = Color.red(pixelValue) / 255.0f//(pixelValue shr 16 and 0xff).toFloat() / 255.0f
+                    floatArray[0][1][i][j] = Color.green(pixelValue) / 255.0f//(pixelValue shr 8 and 0xff).toFloat() / 255.0f
+                    floatArray[0][2][i][j] = Color.blue(pixelValue) / 255.0f//(pixelValue and 0xff).toFloat() / 255.0f
+                }
+
+            }
+
+            return floatArray
         }
 
 

@@ -19,6 +19,7 @@ package com.soloupis.sample.photos_with_depth.utils
 import android.content.Context
 import android.graphics.*
 import android.media.ExifInterface
+import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -305,15 +306,33 @@ abstract class ImageUtils {
             imageWidth: Int,
             imageHeight: Int
         ): Bitmap {
+
+            // Convert multidimensional array to 1D
+            var oneDFloatArray = ArrayList<Float>()
+
+            for (m in imageArray[0].indices) {
+                for (x in imageArray[0][0].indices) {
+                    for (y in imageArray[0][0][0].indices) {
+                        oneDFloatArray.add(imageArray[0][0][x][y])
+                    }
+                }
+            }
+
+            val maxValue:Float = oneDFloatArray.max() ?: 0f
+            val minValue:Float = oneDFloatArray.min() ?: 0f
+            Log.i("ONE_D_ARRAY_MAX", maxValue.toString())
+            Log.i("ONE_D_ARRAY_MIN", minValue.toString())
+
             val conf = Bitmap.Config.ARGB_8888 // see other conf types
             val styledImage = Bitmap.createBitmap(imageWidth, imageHeight, conf)
 
+            // Use manipulation like Colab post processing......  // 255 * (depth - depth_min) / (depth_max - depth_min)
             for (x in imageArray[0][0].indices) {
                 for (y in imageArray[0][0][0].indices) {
                     val color = Color.rgb(
-                        ((imageArray[0][0][x][y] * 255).toInt()),
-                        ((imageArray[0][0][x][y] * 255).toInt()),
-                        (imageArray[0][0][x][y] * 255).toInt()
+                        (255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt(), //((imageArray[0][0][x][y] * 255).toInt()),
+                        (255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt(),//((imageArray[0][0][x][y] * 255).toInt()),
+                        (255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt()//(imageArray[0][0][x][y] * 255).toInt()
                     )
 
                     // this y, x is in the correct order!!!

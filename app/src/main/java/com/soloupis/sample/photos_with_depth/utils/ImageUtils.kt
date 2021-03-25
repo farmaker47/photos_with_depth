@@ -250,15 +250,40 @@ abstract class ImageUtils {
             for (i in 0 until width - 1) {
                 for (j in 0 until height - 1) {
                     val pixelValue: Int = intValues[i * width + j]
-                    floatArray[0][0][i][j] = Color.red(pixelValue) / 255.0f//(pixelValue shr 16 and 0xff).toFloat() / 255.0f
-                    floatArray[0][1][i][j] = Color.green(pixelValue) / 255.0f//(pixelValue shr 8 and 0xff).toFloat() / 255.0f
-                    floatArray[0][2][i][j] = Color.blue(pixelValue) / 255.0f//(pixelValue and 0xff).toFloat() / 255.0f
+                    floatArray[0][0][i][j] =
+                        Color.red(pixelValue) / 255.0f //(pixelValue shr 16 and 0xff).toFloat() / 255.0f
+                    floatArray[0][1][i][j] =
+                        Color.green(pixelValue) / 255.0f //(pixelValue shr 8 and 0xff).toFloat() / 255.0f
+                    floatArray[0][2][i][j] =
+                        Color.blue(pixelValue) / 255.0f //(pixelValue and 0xff).toFloat() / 255.0f
                 }
 
             }
 
-
             return floatArray
+        }
+
+        fun floatArrayToByteBuffer(bitmap: Bitmap): ByteBuffer {
+            val width: Int = bitmap.width
+            val height: Int = bitmap.height
+            val intValues = IntArray(width * height)
+            bitmap.getPixels(intValues, 0, width, 0, 0, width, height)
+
+            val inputImage = ByteBuffer.allocateDirect(1 * 3 * width * height * 4)
+            inputImage.order(ByteOrder.nativeOrder())
+            inputImage.rewind()
+
+            for (i in 0 until width - 1) {
+                for (j in 0 until height - 1) {
+                    val pixelValue: Int = intValues[i * width + j]
+                    inputImage.putFloat(Color.red(pixelValue) / 255.0f)     //(pixelValue shr 16 and 0xff).toFloat() / 255.0f
+                    inputImage.putFloat(Color.green(pixelValue) / 255.0f)   //(pixelValue shr 8 and 0xff).toFloat() / 255.0f
+                    inputImage.putFloat(Color.blue(pixelValue) / 255.0f)    //(pixelValue and 0xff).toFloat() / 255.0f
+                }
+
+            }
+
+            return inputImage
         }
 
 

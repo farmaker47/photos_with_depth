@@ -64,7 +64,12 @@ class DepthAndStyleModelExecutor(
             //val loadedImage = TensorImage.fromBitmap(contentImage).tensorBuffer
             var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
             //val inputStyle = ImageUtils.bitmapToByteBuffer(loadedBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
-            loadedBitmap = Bitmap.createScaledBitmap(loadedBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE, true)
+            loadedBitmap = Bitmap.createScaledBitmap(
+                loadedBitmap,
+                CONTENT_IMAGE_SIZE,
+                CONTENT_IMAGE_SIZE,
+                true
+            )
 
             val inputStyle = ImageUtils.bitmapToFloatArray(loadedBitmap)
             Log.i(TAG, inputStyle[0][0][0].contentToString())
@@ -82,8 +87,7 @@ class DepthAndStyleModelExecutor(
             // Runs model inference and gets result.
             findDepthTime = SystemClock.uptimeMillis()
             interprerDepth.run(inputStyle, outputs)
-            Log.d(TAG, outputs[0][0][0].contentToString())
-            Log.d(TAG, outputs[0][0][0].size.toString())
+            Log.d(TAG, "Output array: " + outputs[0][0][0].contentToString())
             findDepthTime = SystemClock.uptimeMillis() - findDepthTime
             Log.d(TAG, "Find depth time: $findDepthTime")
 

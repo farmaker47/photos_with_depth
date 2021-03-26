@@ -61,7 +61,8 @@ class DepthAndStyleFragment : Fragment(),
     private lateinit var scaledBitmap: Bitmap
     private lateinit var selfieBitmap: Bitmap
     private lateinit var loadedBitmap: Bitmap
-    private lateinit var outputBitmap: Bitmap
+    private lateinit var outputBitmapGray: Bitmap
+    private lateinit var outputBitmapBlack: Bitmap
 
     private var outputBitmapFinal: Bitmap? = null
     private var inferenceTime: Long = 0L
@@ -191,18 +192,19 @@ class DepthAndStyleFragment : Fragment(),
             imageview_input.setImageBitmap(selfieBitmap)
 
             lifecycleScope.launch(Dispatchers.Default) {
-                val (bitmap, inferenceTime) = viewModel.performDepthAndStyleProcedure(
+                val (bitmapGray, bitmapBlack, inferenceTime) = viewModel.performDepthAndStyleProcedure(
                     selfieBitmap,
                     requireActivity()
                 )
-                outputBitmap = bitmap
+                outputBitmapGray = bitmapGray
+                outputBitmapBlack = bitmapBlack
                 withContext(Dispatchers.Main) {
 
                     // Make input ImageView gone
                     binding.imageviewInput.visibility = View.GONE
 
-                    updateUI(outputBitmap, inferenceTime)
-                    finalBitmap = outputBitmap
+                    updateUI(outputBitmapGray, inferenceTime)
+                    finalBitmap = outputBitmapGray
 
                     // Make output Image visible
                     binding.imageviewOutput.visibility = View.VISIBLE
@@ -227,18 +229,19 @@ class DepthAndStyleFragment : Fragment(),
             binding.imageviewInput.visibility = View.VISIBLE
 
             lifecycleScope.launch(Dispatchers.Default) {
-                val (bitmap, inferenceTime) = viewModel.performDepthAndStyleProcedure(
+                val (bitmapGray, bitmapBlack, inferenceTime) = viewModel.performDepthAndStyleProcedure(
                     loadedBitmap,
                     requireActivity()
                 )
-                outputBitmap = bitmap
+                outputBitmapGray = bitmapGray
+                outputBitmapBlack = bitmapBlack
                 withContext(Dispatchers.Main) {
 
                     // Make input ImageView gone
                     binding.imageviewInput.visibility = View.GONE
 
-                    updateUI(outputBitmap, inferenceTime)
-                    finalBitmap = outputBitmap
+                    updateUI(outputBitmapGray, inferenceTime)
+                    finalBitmap = outputBitmapGray
 
                     // Make output Image visible
                     binding.imageviewOutput.visibility = View.VISIBLE

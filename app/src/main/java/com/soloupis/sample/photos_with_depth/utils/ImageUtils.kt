@@ -305,10 +305,10 @@ abstract class ImageUtils {
             imageArray: Array<Array<Array<FloatArray>>>,
             imageWidth: Int,
             imageHeight: Int
-        ): Bitmap {
+        ): Pair<Bitmap, Bitmap> {
 
             // Convert multidimensional array to 1D
-            var oneDFloatArray = ArrayList<Float>()
+            val oneDFloatArray = ArrayList<Float>()
 
             for (m in imageArray[0].indices) {
                 for (x in imageArray[0][0].indices) {
@@ -318,17 +318,38 @@ abstract class ImageUtils {
                 }
             }
 
-            val maxValue:Float = oneDFloatArray.max() ?: 0f
-            val minValue:Float = oneDFloatArray.min() ?: 0f
-            Log.i("ONE_D_ARRAY_MAX", maxValue.toString())
-            Log.i("ONE_D_ARRAY_MIN", minValue.toString())
+            val maxValue: Float = oneDFloatArray.max() ?: 0f
+            val minValue: Float = oneDFloatArray.min() ?: 0f
+            //Log.i("ONE_D_ARRAY_MAX", maxValue.toString())
+            //Log.i("ONE_D_ARRAY_MIN", minValue.toString())
 
             val conf = Bitmap.Config.ARGB_8888 // see other conf types
-            val styledImage = Bitmap.createBitmap(imageWidth, imageHeight, conf)
+            val grayToneImage = Bitmap.createBitmap(imageWidth, imageHeight, conf)
+            val blackWhiteImage = Bitmap.createBitmap(imageWidth, imageHeight, conf)
 
             // Use manipulation like Colab post processing......  // 255 * (depth - depth_min) / (depth_max - depth_min)
             for (x in imageArray[0][0].indices) {
                 for (y in imageArray[0][0][0].indices) {
+
+                    if ((255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt() > 90) {
+                        val colorBlackAndWhite = Color.rgb(
+                            Color.TRANSPARENT,
+                            Color.TRANSPARENT,
+                            Color.TRANSPARENT
+                        )
+
+                        blackWhiteImage.setPixel(y, x, colorBlackAndWhite)
+
+                    } else {
+                        val colorBlackAndWhite = Color.rgb(
+                            255,
+                            255,
+                            255
+                        )
+
+                        blackWhiteImage.setPixel(y, x, colorBlackAndWhite)
+                    }
+
                     val color = Color.rgb(
                         (255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt(), //((imageArray[0][0][x][y] * 255).toInt()),
                         (255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt(),//((imageArray[0][0][x][y] * 255).toInt()),
@@ -336,10 +357,10 @@ abstract class ImageUtils {
                     )
 
                     // this y, x is in the correct order!!!
-                    styledImage.setPixel(y, x, color)
+                    grayToneImage.setPixel(y, x, color)
                 }
             }
-            return styledImage
+            return Pair(grayToneImage, blackWhiteImage)
         }
 
         fun saveBitmap(bitmap: Bitmap?, file: File): String {

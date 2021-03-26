@@ -14,12 +14,12 @@ import org.tensorflow.lite.task.vision.segmenter.ImageSegmenter
 import java.io.IOException
 
 class DepthAndStyleViewModel(application: Application) :
-        AndroidViewModel(application),
-        KoinComponent {
+    AndroidViewModel(application),
+    KoinComponent {
 
     private lateinit var imageSegmenter: ImageSegmenter
-    private lateinit var scaledMaskBitmap: Bitmap
-    private lateinit var outputBitmap: Bitmap
+    private lateinit var outputBitmapBlack: Bitmap
+    private lateinit var outputBitmapGray: Bitmap
     var startTime: Long = 0L
     var inferenceTime = 0L
     lateinit var scaledBitmapObject: Bitmap
@@ -43,7 +43,7 @@ class DepthAndStyleViewModel(application: Application) :
     val inferenceDone: LiveData<Boolean>
         get() = _inferenceDone
 
-    val depthAndStyleModelExecutor:DepthAndStyleModelExecutor
+    val depthAndStyleModelExecutor: DepthAndStyleModelExecutor
 
     init {
 
@@ -64,9 +64,9 @@ class DepthAndStyleViewModel(application: Application) :
     }
 
     fun onApplyStyle(
-            context: Context,
-            contentBitmap: Bitmap,
-            styleFilePath: String
+        context: Context,
+        contentBitmap: Bitmap,
+        styleFilePath: String
     ) {
 
         /*viewModelScope.launch(Dispatchers.Default) {
@@ -75,9 +75,9 @@ class DepthAndStyleViewModel(application: Application) :
     }
 
     private fun inferenceExecute(
-            contentBitmap: Bitmap,
-            styleFilePath: String,
-            context: Context
+        contentBitmap: Bitmap,
+        styleFilePath: String,
+        context: Context
     ) {
 
 
@@ -88,21 +88,29 @@ class DepthAndStyleViewModel(application: Application) :
         _inferenceDone.postValue(true)*/
     }
 
-    fun performDepthAndStyleProcedure(bitmap: Bitmap, context: Context): Pair<Bitmap, Long> {
+    fun performDepthAndStyleProcedure(
+        bitmap: Bitmap,
+        context: Context
+    ): Triple<Bitmap, Bitmap, Long> {
         try {
             // Initialization
             startTime = SystemClock.uptimeMillis()
 
             // Run inference
-            outputBitmap = depthAndStyleModelExecutor.executeProcedureForPhotosWithDepth(bitmap, context)
-            Log.e("RESULT", outputBitmap.toString())
+            val (output1, output2) = depthAndStyleModelExecutor.executeProcedureForPhotosWithDepth(
+                bitmap,
+                context
+            )
+
+            outputBitmapGray = output1
+            outputBitmapBlack = output2
 
             inferenceTime = SystemClock.uptimeMillis() - startTime
         } catch (e: IOException) {
             Log.e("Depth", "Error: ", e)
         }
 
-        return Pair(outputBitmap, inferenceTime)
+        return Triple(outputBitmapGray, outputBitmapBlack, inferenceTime)
     }
 
     fun cropBitmapWithMask(original: Bitmap, mask: Bitmap?): Bitmap? {
@@ -144,9 +152,9 @@ class DepthAndStyleViewModel(application: Application) :
         }
 
         val scaledBitmap = Bitmap.createScaledBitmap(
-                mask,
-                w,
-                h, true
+            mask,
+            w,
+            h, true
         )
 
         val cropped = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)

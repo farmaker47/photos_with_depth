@@ -4,6 +4,10 @@ import android.app.Application
 import android.content.Context
 import android.graphics.*
 import android.os.SystemClock
+import android.renderscript.Allocation
+import android.renderscript.Element
+import android.renderscript.RenderScript
+import android.renderscript.ScriptIntrinsicBlur
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -19,6 +23,7 @@ class DepthAndStyleViewModel(application: Application) :
 
     private lateinit var outputBitmapBlack: Bitmap
     private lateinit var outputBitmapGray: Bitmap
+    private lateinit var context: Context
     var startTime: Long = 0L
     var inferenceTime = 0L
     lateinit var scaledBitmapObject: Bitmap
@@ -51,6 +56,8 @@ class DepthAndStyleViewModel(application: Application) :
         _currentList.addAll(application.assets.list("thumbnails")!!)
 
         depthAndStyleModelExecutor = get()
+
+        context = application
 
     }
 
@@ -112,7 +119,7 @@ class DepthAndStyleViewModel(application: Application) :
         val canvasFinal = Canvas(croppedFinal)
         val paintFinal = Paint(Paint.ANTI_ALIAS_FLAG)
         paintFinal.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
-        canvasFinal.drawBitmap(androidGrayScale(original), 0f, 0f, null)
+        canvasFinal.drawBitmap(blurImage(original), 0f, 0f, null)
         canvasFinal.drawBitmap(cropped, 0f, 0f, paint)
         paintFinal.xfermode = null
 
@@ -144,6 +151,26 @@ class DepthAndStyleViewModel(application: Application) :
         paint.colorFilter = colorMatrixFilter
         canvas.drawBitmap(bmpOriginal, 0f, 0f, paint)
         return bmpGrayscale
+    }
+
+    private fun blurImage(input: Bitmap): Bitmap {
+        return try {
+            val rsScript = RenderScript.create(context)
+            val alloc = Allocation.createFromBitmap(rsScript, input)
+            val blur = ScriptIntrinsicBlur.create(rsScript, Element.U8_4(rsScript))
+            // Set different values for different blur effect
+            blur.setRadius(10f)
+            blur.setInput(alloc)
+            val result = Bitmap.createBitmap(input.width, input.height, Bitmap.Config.ARGB_8888)
+            val outAlloc = Allocation.createFromBitmap(rsScript, result)
+            blur.forEach(outAlloc)
+            outAlloc.copyTo(result)
+            rsScript.destroy()
+            result
+        } catch (e: Exception) {
+            // TODO: handle exception
+            input
+        }
     }
 
     fun cropBitmapWithMaskForStyle(original: Bitmap, mask: Bitmap?): Bitmap? {

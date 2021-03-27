@@ -144,14 +144,8 @@ class DepthAndStyleFragment : Fragment(),
                         .into(binding.imageviewStyled)
 
                     // Set this to use with save function
-                    /*finalBitmapWithStyle = viewModel.cropBitmapWithMaskForStyle(
-                        resultImage.styledImage,
-                        outputBitmapFinal
-                    )
+                    finalBitmapWithStyle = resultImage
 
-                    binding.imageviewStyled.setImageBitmap(
-                        finalBitmapWithStyle
-                    )*///loadedBitmap
                 }
             }
         )

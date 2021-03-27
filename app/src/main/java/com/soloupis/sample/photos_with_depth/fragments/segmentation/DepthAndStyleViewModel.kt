@@ -58,35 +58,6 @@ class DepthAndStyleViewModel(application: Application) :
         stylename = string
     }
 
-    fun setTheSeekBarProgress(progress: Float) {
-        seekBarProgress = progress
-    }
-
-    fun onApplyStyle(
-        context: Context,
-        contentBitmap: Bitmap,
-        styleFilePath: String
-    ) {
-
-        /*viewModelScope.launch(Dispatchers.Default) {
-            inferenceExecute(contentBitmap, styleFilePath, context)
-        }*/
-    }
-
-    private fun inferenceExecute(
-        contentBitmap: Bitmap,
-        styleFilePath: String,
-        context: Context
-    ) {
-
-
-        /*val result = ocrModelExecutor.executeWithMLBinding(contentBitmap, styleFilePath, context)
-
-        _totalTimeInference.postValue(result.totalExecutionTime.toInt())
-        _styledBitmap.postValue(result)
-        _inferenceDone.postValue(true)*/
-    }
-
     fun performDepthAndStyleProcedure(
         bitmap: Bitmap,
         context: Context

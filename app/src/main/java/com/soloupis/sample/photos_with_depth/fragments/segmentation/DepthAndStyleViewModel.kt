@@ -3,6 +3,7 @@ package com.soloupis.sample.photos_with_depth.fragments.segmentation
 import android.app.Application
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.Drawable
 import android.os.SystemClock
 import android.renderscript.Allocation
 import android.renderscript.Element
@@ -119,7 +120,7 @@ class DepthAndStyleViewModel(application: Application) :
         val canvasFinal = Canvas(croppedFinal)
         val paintFinal = Paint(Paint.ANTI_ALIAS_FLAG)
         paintFinal.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
-        canvasFinal.drawBitmap(blurImage(original), 0f, 0f, null)
+        canvasFinal.drawBitmap(setSepiaColorFilter(original), 0f, 0f, null)
         canvasFinal.drawBitmap(cropped, 0f, 0f, paint)
         paintFinal.xfermode = null
 
@@ -171,6 +172,40 @@ class DepthAndStyleViewModel(application: Application) :
             // TODO: handle exception
             input
         }
+    }
+
+    private fun setSepiaColorFilter(bmpOriginal: Bitmap): Bitmap {
+        val height: Int = bmpOriginal.height
+        val width: Int = bmpOriginal.width
+        val bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bmpGrayscale)
+        val paint = Paint()
+        val matrixA = ColorMatrix()
+        // making image B&W
+        matrixA.setSaturation(0f)
+        val matrixB = ColorMatrix()
+        // applying scales for RGB color values
+        //matrixB.setScale(1f, .95f, .82f, 1.0f)
+        matrixB.setScale(1f, .95f, .75f, 1.0f)
+        matrixA.setConcat(matrixB, matrixA)
+        val colorMatrixFilter = ColorMatrixColorFilter(matrixA)
+        paint.colorFilter = colorMatrixFilter
+        canvas.drawBitmap(bmpOriginal, 0f, 0f, paint)
+        return bmpGrayscale
+
+
+
+
+
+        /*val matrixA = ColorMatrix()
+        // making image B&W
+        matrixA.setSaturation(0f)
+        val matrixB = ColorMatrix()
+        // applying scales for RGB color values
+        matrixB.setScale(1f, .95f, .82f, 1.0f)
+        matrixA.setConcat(matrixB, matrixA)
+        val filter = ColorMatrixColorFilter(matrixA)
+        drawable.colorFilter = filter*/
     }
 
     fun cropBitmapWithMaskForStyle(original: Bitmap, mask: Bitmap?): Bitmap? {

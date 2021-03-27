@@ -19,7 +19,6 @@ package com.soloupis.sample.photos_with_depth.utils
 import android.content.Context
 import android.graphics.*
 import android.media.ExifInterface
-import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -320,8 +319,6 @@ abstract class ImageUtils {
 
             val maxValue: Float = oneDFloatArray.max() ?: 0f
             val minValue: Float = oneDFloatArray.min() ?: 0f
-            //Log.i("ONE_D_ARRAY_MAX", maxValue.toString())
-            //Log.i("ONE_D_ARRAY_MIN", minValue.toString())
 
             val conf = Bitmap.Config.ARGB_8888 // see other conf types
             val grayToneImage = Bitmap.createBitmap(imageWidth, imageHeight, conf)
@@ -331,7 +328,16 @@ abstract class ImageUtils {
             for (x in imageArray[0][0].indices) {
                 for (y in imageArray[0][0][0].indices) {
 
-                    if ((255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt() > 90) {
+                    /*if ((255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt() > 90) {
+                        val colorBlackAndWhite = Color.rgb(
+                            0,
+                            0,
+                            0
+                        )
+
+                        blackWhiteImage.setPixel(y, x, colorBlackAndWhite)
+
+                    } else {
                         val colorBlackAndWhite = Color.rgb(
                             Color.TRANSPARENT,
                             Color.TRANSPARENT,
@@ -339,16 +345,14 @@ abstract class ImageUtils {
                         )
 
                         blackWhiteImage.setPixel(y, x, colorBlackAndWhite)
+                    }*/
 
-                    } else {
-                        val colorBlackAndWhite = Color.rgb(
-                            255,
-                            255,
-                            255
-                        )
+                    blackWhiteImage.setPixel(
+                        y,
+                        x,
+                        if ((255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt() > 150) Color.BLACK else Color.TRANSPARENT
+                    )
 
-                        blackWhiteImage.setPixel(y, x, colorBlackAndWhite)
-                    }
 
                     val color = Color.rgb(
                         (255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt(), //((imageArray[0][0][x][y] * 255).toInt()),

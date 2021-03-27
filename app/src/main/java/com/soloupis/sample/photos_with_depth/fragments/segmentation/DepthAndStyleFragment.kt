@@ -59,7 +59,6 @@ class DepthAndStyleFragment : Fragment(),
     private lateinit var depthAndStyleModelExecutor: DepthAndStyleModelExecutor
 
     private lateinit var scaledBitmap: Bitmap
-    private lateinit var selfieBitmap: Bitmap
     private lateinit var loadedBitmap: Bitmap
     private lateinit var outputBitmapGray: Bitmap
     private lateinit var outputBitmapBlack: Bitmap
@@ -139,10 +138,10 @@ class DepthAndStyleFragment : Fragment(),
             requireActivity(),
             Observer { resultImage ->
                 if (resultImage != null) {
-                    /*Glide.with(activity!!)
-                        .load(resultImage.styledImage)
+                    Glide.with(requireActivity())
+                        .load(resultImage)
                         .fitCenter()
-                        .into(binding.imageViewStyled)*/
+                        .into(binding.imageviewStyled)
 
                     // Set this to use with save function
                     /*finalBitmapWithStyle = viewModel.cropBitmapWithMaskForStyle(
@@ -152,7 +151,7 @@ class DepthAndStyleFragment : Fragment(),
 
                     binding.imageviewStyled.setImageBitmap(
                         finalBitmapWithStyle
-                    )*///selfieBitmap
+                    )*///loadedBitmap
                 }
             }
         )
@@ -188,12 +187,12 @@ class DepthAndStyleFragment : Fragment(),
             // Make input ImageView visible
             binding.imageviewInput.visibility = View.VISIBLE
 
-            selfieBitmap = BitmapFactory.decodeFile(filePath)
-            imageview_input.setImageBitmap(selfieBitmap)
+            loadedBitmap = BitmapFactory.decodeFile(filePath)
+            imageview_input.setImageBitmap(loadedBitmap)
 
             lifecycleScope.launch(Dispatchers.Default) {
                 val (bitmapGray, bitmapBlack, inferenceTime) = viewModel.performDepthAndStyleProcedure(
-                    selfieBitmap,
+                    loadedBitmap,
                     requireActivity()
                 )
                 outputBitmapGray = bitmapGray
@@ -284,7 +283,6 @@ class DepthAndStyleFragment : Fragment(),
     }
 
     private fun saveImageToSDCard(bitmap: Bitmap?): String {
-
         val file = File(
             MainActivity.getOutputDirectory(requireContext()),
             SimpleDateFormat(
@@ -297,7 +295,6 @@ class DepthAndStyleFragment : Fragment(),
             .show()
 
         return file.absolutePath
-
     }
 
     companion object {
@@ -316,7 +313,7 @@ class DepthAndStyleFragment : Fragment(),
 
         // Created scaled version of bitmap for model input.
         scaledBitmap = Bitmap.createScaledBitmap(
-            selfieBitmap,
+            loadedBitmap,
             MODEL_WIDTH,
             MODEL_HEIGHT, true
         )
@@ -335,7 +332,7 @@ class DepthAndStyleFragment : Fragment(),
         stylesFragment.dismiss()
 
         scaledBitmap = Bitmap.createScaledBitmap(
-            selfieBitmap,
+            loadedBitmap,
             MODEL_WIDTH,
             MODEL_HEIGHT, true
         )
@@ -348,8 +345,8 @@ class DepthAndStyleFragment : Fragment(),
     private fun showStyledImage(style: String) {
         lifecycleScope.launch(Dispatchers.Default) {
 
-            viewModel.onApplyStyle(
-                requireActivity(), scaledBitmap, style
+            viewModel.cropBitmapWithMask(
+                scaledBitmap, outputBitmapBlack, style
             )
         }
     }

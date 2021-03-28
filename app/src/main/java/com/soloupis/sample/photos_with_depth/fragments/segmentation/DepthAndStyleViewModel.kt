@@ -52,7 +52,7 @@ class DepthAndStyleViewModel(application: Application) :
 
     init {
 
-        stylename = "mona.JPG"
+        stylename = "agray.jpg"
 
         _currentList.addAll(application.assets.list("thumbnails")!!)
 
@@ -91,7 +91,7 @@ class DepthAndStyleViewModel(application: Application) :
         return Triple(outputBitmapGray, outputBitmapBlack, inferenceTime)
     }
 
-    fun cropBitmapWithMask(original: Bitmap, mask: Bitmap?, string: String): Bitmap? {
+    fun cropBitmapWithMask(original: Bitmap, mask: Bitmap?, style: String): Bitmap? {
         if (original == null || mask == null
         ) {
             return null
@@ -120,7 +120,14 @@ class DepthAndStyleViewModel(application: Application) :
         val canvasFinal = Canvas(croppedFinal)
         val paintFinal = Paint(Paint.ANTI_ALIAS_FLAG)
         paintFinal.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
-        canvasFinal.drawBitmap(setSepiaColorFilter(original), 0f, 0f, null)
+        when (style) {
+            "agray.jpg" -> canvasFinal.drawBitmap(androidGrayScale(original), 0f, 0f, null)
+            "blur1.jpg" -> canvasFinal.drawBitmap(blurImage(original, 5), 0f, 0f, null)
+            "blur2.jpg" -> canvasFinal.drawBitmap(blurImage(original, 10), 0f, 0f, null)
+            "blur3.jpg" -> canvasFinal.drawBitmap(blurImage(original, 15), 0f, 0f, null)
+            "sepia.jpg" -> canvasFinal.drawBitmap(setSepiaColorFilter(original), 0f, 0f, null)
+        }
+        //canvasFinal.drawBitmap(setSepiaColorFilter(original), 0f, 0f, null)
         canvasFinal.drawBitmap(cropped, 0f, 0f, paint)
         paintFinal.xfermode = null
 
@@ -154,13 +161,13 @@ class DepthAndStyleViewModel(application: Application) :
         return bmpGrayscale
     }
 
-    private fun blurImage(input: Bitmap): Bitmap {
+    private fun blurImage(input: Bitmap, number: Int): Bitmap {
         return try {
             val rsScript = RenderScript.create(context)
             val alloc = Allocation.createFromBitmap(rsScript, input)
             val blur = ScriptIntrinsicBlur.create(rsScript, Element.U8_4(rsScript))
             // Set different values for different blur effect
-            blur.setRadius(10f)
+            blur.setRadius(number.toFloat())
             blur.setInput(alloc)
             val result = Bitmap.createBitmap(input.width, input.height, Bitmap.Config.ARGB_8888)
             val outAlloc = Allocation.createFromBitmap(rsScript, result)
@@ -186,53 +193,12 @@ class DepthAndStyleViewModel(application: Application) :
         val matrixB = ColorMatrix()
         // applying scales for RGB color values
         //matrixB.setScale(1f, .95f, .82f, 1.0f)
-        matrixB.setScale(1f, .95f, .75f, 1.0f)
+        matrixB.setScale(1f, .90f, .77f, 1.0f)
         matrixA.setConcat(matrixB, matrixA)
         val colorMatrixFilter = ColorMatrixColorFilter(matrixA)
         paint.colorFilter = colorMatrixFilter
         canvas.drawBitmap(bmpOriginal, 0f, 0f, paint)
         return bmpGrayscale
-
-
-
-
-
-        /*val matrixA = ColorMatrix()
-        // making image B&W
-        matrixA.setSaturation(0f)
-        val matrixB = ColorMatrix()
-        // applying scales for RGB color values
-        matrixB.setScale(1f, .95f, .82f, 1.0f)
-        matrixA.setConcat(matrixB, matrixA)
-        val filter = ColorMatrixColorFilter(matrixA)
-        drawable.colorFilter = filter*/
-    }
-
-    fun cropBitmapWithMaskForStyle(original: Bitmap, mask: Bitmap?): Bitmap? {
-        if (original == null || mask == null
-        ) {
-            return null
-        }
-        val w = original.width
-        val h = original.height
-        if (w <= 0 || h <= 0) {
-            return null
-        }
-
-        val scaledBitmap = Bitmap.createScaledBitmap(
-            mask,
-            w,
-            h, true
-        )
-
-        val cropped = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(cropped)
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OVER)
-        canvas.drawBitmap(original, 0f, 0f, null)
-        canvas.drawBitmap(scaledBitmap, 0f, 0f, paint)
-        paint.xfermode = null
-        return cropped
     }
 
     override fun onCleared() {

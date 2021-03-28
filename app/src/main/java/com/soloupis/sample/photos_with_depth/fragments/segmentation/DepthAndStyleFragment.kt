@@ -255,8 +255,6 @@ class DepthAndStyleFragment : Fragment(),
             .into(imageview_output)
         //imageview_output?.setImageBitmap(outputBitmap)
         inference_info.text = "Total process time: " + inferenceTime.toString() + "ms"
-
-        //showStyledImage("mona.JPG")
     }
 
     override fun onDestroy() {

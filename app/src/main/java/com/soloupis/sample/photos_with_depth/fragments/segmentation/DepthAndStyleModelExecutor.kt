@@ -35,7 +35,7 @@ class DepthAndStyleModelExecutor(
     private var findDepthTime = 0L
     private var styleTransferTime = 0L
     private var postProcessTime = 0L
-    private var interprerDepth: Interpreter
+    private var interpreterDepth: Interpreter
     private lateinit var gpuDelegate: GpuDelegate
 
     companion object {
@@ -46,7 +46,7 @@ class DepthAndStyleModelExecutor(
 
     init {
 
-        interprerDepth = getInterpreter(context, DEPTH_MODEL, useGPU)
+        interpreterDepth = getInterpreter(context, DEPTH_MODEL, useGPU)
 
     }
 
@@ -60,8 +60,10 @@ class DepthAndStyleModelExecutor(
             fullExecutionTime = SystemClock.uptimeMillis()
 
             // Creates inputs for reference.
+            // This model expects a 1,3,384,384 input so it is impossible to use Support Library and byteBuffer
+            // So we go with plain array inputs and outputs
+
             preProcessTime = SystemClock.uptimeMillis()
-            //val loadedImage = TensorImage.fromBitmap(contentImage).tensorBuffer
             //var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/agray.jpg")
             //val inputStyle = ImageUtils.bitmapToByteBuffer(loadedBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
             val loadedBitmap = Bitmap.createScaledBitmap(
@@ -71,9 +73,11 @@ class DepthAndStyleModelExecutor(
                 true
             )
 
+            // Convert Bitmap to Float array
             val inputStyle = ImageUtils.bitmapToFloatArray(loadedBitmap)
             Log.i(TAG, inputStyle[0][0][0].contentToString())
 
+            // Create an output array with size 1,1,384,384
             val outputs = Array(1) {
                 Array(1) {
                     Array(CONTENT_IMAGE_SIZE) {
@@ -86,13 +90,14 @@ class DepthAndStyleModelExecutor(
 
             // Runs model inference and gets result.
             findDepthTime = SystemClock.uptimeMillis()
-            interprerDepth.run(inputStyle, outputs)
+            interpreterDepth.run(inputStyle, outputs)
             Log.d(TAG, "Output array: " + outputs[0][0][0].contentToString())
             findDepthTime = SystemClock.uptimeMillis() - findDepthTime
             Log.d(TAG, "Find depth time: $findDepthTime")
 
             // Post process time
             postProcessTime = SystemClock.uptimeMillis()
+            // Convert output array to Bitmap
             val (finalBitmapGrey, finalBitmapBlack) = ImageUtils.convertArrayToBitmap(
                 outputs, CONTENT_IMAGE_SIZE,
                 CONTENT_IMAGE_SIZE
@@ -104,10 +109,11 @@ class DepthAndStyleModelExecutor(
             fullExecutionTime = SystemClock.uptimeMillis() - fullExecutionTime
             Log.d(TAG, "Time to run everything: $fullExecutionTime")
 
+            // Return grayscale image (model output) to show this on screen and a bitmap that is going to be used for styled background
             return Pair(
                 finalBitmapGrey,
                 finalBitmapBlack
-            )//outputsPredict.arrayOutputAsTensorBuffer.intArray
+            )
         } catch (e: Exception) {
             val exceptionLog = "something went wrong: ${e.message}"
             Log.e("EXECUTOR", exceptionLog)
@@ -176,6 +182,6 @@ class DepthAndStyleModelExecutor(
     }
 
     fun close() {
-        interprerDepth.close()
+        interpreterDepth.close()
     }
 }

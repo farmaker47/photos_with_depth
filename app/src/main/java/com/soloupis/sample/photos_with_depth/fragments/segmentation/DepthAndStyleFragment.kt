@@ -63,7 +63,6 @@ class DepthAndStyleFragment : Fragment(),
     private lateinit var outputBitmapGray: Bitmap
     private lateinit var outputBitmapBlack: Bitmap
 
-    private var outputBitmapFinal: Bitmap? = null
     private var inferenceTime: Long = 0L
     private val stylesFragment: StyleFragment = StyleFragment()
 
@@ -105,9 +104,10 @@ class DepthAndStyleFragment : Fragment(),
 
         getKoin().setProperty(getString(R.string.koinStyle), viewModel.stylename)
 
+        // Observe view model
         observeViewModel()
 
-        // Click on Style picker
+        // Click on Style picker if visible
         binding.chooseStyleTextView.setOnClickListener {
             stylesFragment.show(requireActivity().supportFragmentManager, "StylesFragment")
         }
@@ -150,7 +150,7 @@ class DepthAndStyleFragment : Fragment(),
             }
         )
 
-        // Observe style transfer procedure
+        // Observe depth procedure
         viewModel.inferenceDone.observe(
             requireActivity(),
             Observer { loadingDone ->
@@ -172,12 +172,6 @@ class DepthAndStyleFragment : Fragment(),
         super.onViewCreated(view, savedInstanceState)
         if (filePath.startsWith("/storage")) {
             photoFile = File(filePath)
-
-            /*Glide.with(imageview_input.context)
-                    .load(photoFile)
-                    .fitCenter()
-                    .into(imageview_input)*/
-
             // Make input ImageView visible
             binding.imageviewInput.visibility = View.VISIBLE
 
@@ -253,13 +247,8 @@ class DepthAndStyleFragment : Fragment(),
             .load(outputBitmap)
             .fitCenter()
             .into(imageview_output)
-        //imageview_output?.setImageBitmap(outputBitmap)
-        inference_info.text = "Total process time: " + inferenceTime.toString() + "ms"
-    }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        // clean up coroutine job
+        inference_info.text = "Total process time: " + inferenceTime.toString() + "ms"
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -297,7 +286,6 @@ class DepthAndStyleFragment : Fragment(),
     }
 
     override fun onListItemClick(itemIndex: Int, sharedImage: ImageView?, type: String) {
-
         // Upon click show progress bar
         binding.progressbarStyle.visibility = View.VISIBLE
         // make placeholder gone
@@ -313,14 +301,12 @@ class DepthAndStyleFragment : Fragment(),
         showStyledImage(type)
         getKoin().setProperty(getString(R.string.koinStyle), type)
         viewModel.setStyleName(type)
-
     }
 
     override fun onListFragmentInteraction(item: String) {
     }
 
     fun methodToStartStyleTransfer(item: String) {
-
         stylesFragment.dismiss()
 
         scaledBitmap = Bitmap.createScaledBitmap(

@@ -328,32 +328,15 @@ abstract class ImageUtils {
             for (x in imageArray[0][0].indices) {
                 for (y in imageArray[0][0][0].indices) {
 
-                    /*if ((255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt() > 90) {
-                        val colorBlackAndWhite = Color.rgb(
-                            0,
-                            0,
-                            0
-                        )
-
-                        blackWhiteImage.setPixel(y, x, colorBlackAndWhite)
-
-                    } else {
-                        val colorBlackAndWhite = Color.rgb(
-                            Color.TRANSPARENT,
-                            Color.TRANSPARENT,
-                            Color.TRANSPARENT
-                        )
-
-                        blackWhiteImage.setPixel(y, x, colorBlackAndWhite)
-                    }*/
-
+                    // Create black and transparent bitmap based on pixel value above a certain number eg. 150
+                    // make all pixels black in case value of grayscale image is above 150
                     blackWhiteImage.setPixel(
                         y,
                         x,
                         if ((255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt() > 150) Color.BLACK else Color.TRANSPARENT
                     )
 
-
+                    // Create grayscale image to show on screen after inference
                     val color = Color.rgb(
                         (255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt(), //((imageArray[0][0][x][y] * 255).toInt()),
                         (255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt(),//((imageArray[0][0][x][y] * 255).toInt()),

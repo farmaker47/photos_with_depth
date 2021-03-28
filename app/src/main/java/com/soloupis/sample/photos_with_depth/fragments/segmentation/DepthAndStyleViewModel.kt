@@ -84,6 +84,7 @@ class DepthAndStyleViewModel(application: Application) :
             outputBitmapBlack = output2
 
             inferenceTime = SystemClock.uptimeMillis() - startTime
+
         } catch (e: IOException) {
             Log.e("Depth", "Error: ", e)
         }

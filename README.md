@@ -12,4 +12,4 @@ The output of the model is an array of [1, 1, Width, Height] shape. This array i
 
 and screenshots when the background camera is used inside a room:
 
-<img src="images/normal_1.jpg" width="240" height="404"> <img src="images/normal_2.jpg" width="240" height="404"> <img src="images/normal_3.jpg" width="240" height="404">
+<img src="images/normal_3.jpg" width="240" height="404"> <img src="images/normal_2.jpg" width="240" height="404"> <img src="images/normal_1.jpg" width="240" height="404">

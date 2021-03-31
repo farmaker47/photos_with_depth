@@ -8,4 +8,4 @@ The model that we used was written in __Pytorch__. With the provided colab noteb
 
 The output of the model is an array of [1, 1, Width, Height] shape. This array is converted to a grayscale image and then on screen you can observe the input image and a grayscale one with the depth estimation in various tones of gray. Selecting specific values of pixels above a certain number we focus on the objects inside the image that are closer to the camera. That objects remain unchanged and the background is converted to B/W, blurred or sepia. Below you can see some mobile screenshots of the output:
 
-<img src="images/george_1.jpg" width="340" height="604"> <img src="images/george_2.jpg" width="340" height="604">
+<img src="images/george_1.jpg" width="340" height="604"> <img src="images/george_2.jpg" width="340" height="604"> <img src="images/george_3.jpg" width="340" height="604">

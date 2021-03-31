@@ -50,6 +50,7 @@ abstract class ImageUtils {
                 ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270F)
                 ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.postScale(-1F, 1F)
                 ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.postScale(1F, -1F)
+
                 ExifInterface.ORIENTATION_TRANSPOSE -> {
                     matrix.postScale(-1F, 1F)
                     matrix.postRotate(270F)

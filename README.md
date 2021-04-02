@@ -178,6 +178,10 @@ fun convertArrayToBitmap(
             return Pair(grayToneImage, blackWhiteImage)
  }
  ```
+Above function returns a grayscale image that is immediately shown on users screen and a black/transparent one that is going to be used to create the final gray, blurred or sepia background. By changing the value of the pixels' color (here it is 150) you can choose what objects are going to be shown unchanged on screen.  Comments are displayed inside the function and guides to specific bitmap creations. The two bitmaps are returned inside [`DepthAndStyleFragment.kt`](https://github.com/farmaker47/photos_with_depth/blob/master/app/src/main/java/com/soloupis/sample/photos_with_depth/fragments/segmentation/DepthAndStyleFragment.kt) class and the user by clicking one of the styles gets the generated image with the foreground unchanged and the background with the desired style (blurred for example):
 
+<img src="images/george_3.jpg" width="240" height="404">
+
+This effect is done...
 
 

@@ -58,5 +58,126 @@ fun bitmapToFloatArray(bitmap: Bitmap):
 then inside [`DepthAndStyleModelExecutor.kt`](https://github.com/farmaker47/photos_with_depth/blob/master/app/src/main/java/com/soloupis/sample/photos_with_depth/fragments/segmentation/DepthAndStyleModelExecutor.kt) class 
 interpreter uses the above float array and gives the result which is also a float array of shape [1, 1, Width, Height].
 
+```
+fun executeProcedureForPhotosWithDepth(
+        contentImage: Bitmap,
+        context: Context
+    ): Pair<Bitmap, Bitmap> {
+        try {
+            Log.i(TAG, "running models")
+            fullExecutionTime = SystemClock.uptimeMillis()
+
+            // Creates inputs for reference.
+            // This model expects a 1,3,384,384 input so it is impossible to use Support Library and byteBuffer
+            // So we go with plain array inputs and outputs
+
+            preProcessTime = SystemClock.uptimeMillis()
+            //var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/agray.jpg")
+            //val inputStyle = ImageUtils.bitmapToByteBuffer(loadedBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
+            val loadedBitmap = Bitmap.createScaledBitmap(
+                contentImage,
+                CONTENT_IMAGE_SIZE,
+                CONTENT_IMAGE_SIZE,
+                true
+            )
+
+            // Convert Bitmap to Float array
+            val inputStyle = ImageUtils.bitmapToFloatArray(loadedBitmap)
+            Log.i(TAG, inputStyle[0][0][0].contentToString())
+
+            // Create an output array with size 1,1,384,384
+            val outputs = Array(1) {
+                Array(1) {
+                    Array(CONTENT_IMAGE_SIZE) {
+                        FloatArray(CONTENT_IMAGE_SIZE)
+                    }
+                }
+            }
+            preProcessTime = SystemClock.uptimeMillis() - preProcessTime
+            Log.d(TAG, "Pre process time: $preProcessTime")
+
+            // Runs model inference and gets result.
+            findDepthTime = SystemClock.uptimeMillis()
+            interpreterDepth.run(inputStyle, outputs)
+            Log.d(TAG, "Output array: " + outputs[0][0][0].contentToString())
+            findDepthTime = SystemClock.uptimeMillis() - findDepthTime
+            Log.d(TAG, "Find depth time: $findDepthTime")
+
+            // Post process time
+            postProcessTime = SystemClock.uptimeMillis()
+            // Convert output array to Bitmap
+            val (finalBitmapGrey, finalBitmapBlack) = ImageUtils.convertArrayToBitmap(
+                outputs, CONTENT_IMAGE_SIZE,
+                CONTENT_IMAGE_SIZE
+            )
+            postProcessTime = SystemClock.uptimeMillis() - postProcessTime
+            Log.d(TAG, "Post process time: $postProcessTime")
+
+            // Full execution time
+            fullExecutionTime = SystemClock.uptimeMillis() - fullExecutionTime
+            Log.d(TAG, "Time to run everything: $fullExecutionTime")
+
+            // Return grayscale image (model output) to show this on screen and a bitmap that is going to be used for styled background
+            return Pair(
+                finalBitmapGrey,
+                finalBitmapBlack
+            )
+}
+```
+
+Finally the output array is converted to a grayscale image so this can be shown at user's screen. This function is also inside [`ImageUtils.kt`](https://github.com/farmaker47/photos_with_depth/blob/master/app/src/main/java/com/soloupis/sample/photos_with_depth/utils/ImageUtils.kt) class.
+
+```
+fun convertArrayToBitmap(
+            imageArray: Array<Array<Array<FloatArray>>>,
+            imageWidth: Int,
+            imageHeight: Int
+        ): Pair<Bitmap, Bitmap> {
+
+            // Convert multidimensional array to 1D
+            val oneDFloatArray = ArrayList<Float>()
+
+            for (m in imageArray[0].indices) {
+                for (x in imageArray[0][0].indices) {
+                    for (y in imageArray[0][0][0].indices) {
+                        oneDFloatArray.add(imageArray[0][0][x][y])
+                    }
+                }
+            }
+
+            val maxValue: Float = oneDFloatArray.max() ?: 0f
+            val minValue: Float = oneDFloatArray.min() ?: 0f
+
+            val conf = Bitmap.Config.ARGB_8888 // see other conf types
+            val grayToneImage = Bitmap.createBitmap(imageWidth, imageHeight, conf)
+            val blackWhiteImage = Bitmap.createBitmap(imageWidth, imageHeight, conf)
+
+            // Use manipulation like Colab post processing......  // 255 * (depth - depth_min) / (depth_max - depth_min)
+            for (x in imageArray[0][0].indices) {
+                for (y in imageArray[0][0][0].indices) {
+
+                    // Create black and transparent bitmap based on pixel value above a certain number eg. 150
+                    // make all pixels black in case value of grayscale image is above 150
+                    blackWhiteImage.setPixel(
+                        y,
+                        x,
+                        if ((255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt() > 150) Color.BLACK else Color.TRANSPARENT
+                    )
+
+                    // Create grayscale image to show on screen after inference
+                    val color = Color.rgb(
+                        (255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt(), //((imageArray[0][0][x][y] * 255).toInt()),
+                        (255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt(),//((imageArray[0][0][x][y] * 255).toInt()),
+                        (255 * (imageArray[0][0][x][y] - minValue) / (maxValue - minValue)).toInt()//(imageArray[0][0][x][y] * 255).toInt()
+                    )
+
+                    // this y, x is in the correct order!!!
+                    grayToneImage.setPixel(y, x, color)
+                }
+            }
+            return Pair(grayToneImage, blackWhiteImage)
+ }
+ ```
+
 
 

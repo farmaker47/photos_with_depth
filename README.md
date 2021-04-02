@@ -13,3 +13,50 @@ The output of the model is an array of [1, 1, Width, Height] shape. This array i
 and screenshots when the background camera is used inside a room:
 
 <img src="images/normal_3.jpg" width="240" height="404"> <img src="images/normal_2.jpg" width="240" height="404"> <img src="images/normal_1.jpg" width="240" height="404">
+
+## Explore the code
+
+We're now going to walk through the most important parts of the sample code.
+
+This application uses CameraX to get an image from the front or back camera. You can see the implementation inside [`CameraFragment.kt`](https://github.com/farmaker47/photos_with_depth/blob/master/app/src/main/java/com/soloupis/sample/photos_with_depth/fragments/CameraFragment.kt) class. You can also load an image from the phone's gallery.
+
+The [`ImageUtils.kt`](https://github.com/farmaker47/photos_with_depth/blob/master/app/src/main/java/com/soloupis/sample/photos_with_depth/utils/ImageUtils.kt) class contains the basic code for pre-processing the image and create the float array of size [1, 3, Width, Height] that is going to be used from the interpreter.
+
+```
+fun bitmapToFloatArray(bitmap: Bitmap):
+                Array<Array<Array<FloatArray>>> {
+            val width: Int = bitmap.width
+            val height: Int = bitmap.height
+            val intValues = IntArray(width * height)
+            bitmap.getPixels(intValues, 0, width, 0, 0, width, height)
+
+            val floatArray = Array(1) {
+                Array(3) {
+                    Array(width) {
+                        FloatArray(height)
+                    }
+                }
+            }
+
+            for (i in 0 until width - 1) {
+                for (j in 0 until height - 1) {
+                    val pixelValue: Int = intValues[i * width + j]
+                    floatArray[0][0][i][j] =
+                        Color.red(pixelValue) / 255.0f // or  (pixelValue shr 16 and 0xff).toFloat() / 255.0f
+                    floatArray[0][1][i][j] =
+                        Color.green(pixelValue) / 255.0f // or (pixelValue shr 8 and 0xff).toFloat() / 255.0f
+                    floatArray[0][2][i][j] =
+                        Color.blue(pixelValue) / 255.0f // or (pixelValue and 0xff).toFloat() / 255.0f
+                }
+
+            }
+
+            return floatArray
+}
+```
+
+then inside [`DepthAndStyleModelExecutor.kt`](https://github.com/farmaker47/photos_with_depth/blob/master/app/src/main/java/com/soloupis/sample/photos_with_depth/fragments/segmentation/DepthAndStyleModelExecutor.kt) class 
+interpreter uses the above float array and gives the result which is also a float array of shape [1, 1, Width, Height].
+
+
+

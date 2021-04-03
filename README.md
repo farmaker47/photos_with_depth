@@ -186,6 +186,6 @@ This effect is created with [PorterDuff.Mode](https://developer.android.com/refe
 
 ### Useful links
 
-Youtube video.
+[Youtube video](https://youtu.be/INaIzXlVHq8).
 
 

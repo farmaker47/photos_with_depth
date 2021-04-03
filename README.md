@@ -182,6 +182,10 @@ Above function returns a grayscale image that is immediately shown on users scre
 
 <img src="images/george_3.jpg" width="240" height="404">
 
-This effect is done...
+This effect is created with [PorterDuff.Mode](https://developer.android.com/reference/android/graphics/PorterDuff.Mode) and you can observe the image compositing inside [`DepthAndStyleViewModel.kt`](https://github.com/farmaker47/photos_with_depth/blob/master/app/src/main/java/com/soloupis/sample/photos_with_depth/fragments/segmentation/DepthAndStyleViewModel.kt#L95) class (`cropBitmapWithMask` function). 
+
+### Useful links
+
+Youtube video.
 
 

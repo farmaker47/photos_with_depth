@@ -194,9 +194,9 @@ abstract class ImageUtils {
             mean: Float = 0.0f,
             std: Float = 255.0f
         ): ByteBuffer {
-            var bitmap = cropBitmap(bitmapIn)
+            //var bitmap = cropBitmap(bitmapIn)
             //bitmap = scaleBitmapAndKeepRatio(bitmapIn, width, height)
-            bitmap = Bitmap.createScaledBitmap(bitmapIn, width, height, true)
+            val bitmap = Bitmap.createScaledBitmap(bitmapIn, width, height, true)
             val inputImage = ByteBuffer.allocateDirect(1 * width * height * 3 * 4)
             inputImage.order(ByteOrder.nativeOrder())
             inputImage.rewind()
@@ -204,22 +204,37 @@ abstract class ImageUtils {
             val intValues = IntArray(width * height)
             bitmap.getPixels(intValues, 0, width, 0, 0, width, height)
             var pixel = 0
-            for (y in 0 until height) {
-                for (x in 0 until width) {
+            for (x in 0 until width) {
+                for (y in 0 until height) {
                     //val value = intValues[pixel++]
-                    val value = intValues[y * width + x]
+                    val value = intValues[x * width + y]
 
-                    // Normalize channel values to [-1.0, 1.0]. This requirement varies by
-                    // model. For example, some models might require values to be normalized
-                    // to the range [0.0, 1.0] instead.
-                    inputImage.putFloat(((value shr 16 and 0xFF) - mean) / std)
-                    inputImage.putFloat(((value shr 8 and 0xFF) - mean) / std)
+
+                    //inputImage.putFloat(((value shr 16 and 0xFF) - mean) / std)
+                    //inputImage.putFloat(((value shr 8 and 0xFF) - mean) / std)
                     inputImage.putFloat(((value and 0xFF) - mean) / std)
+
+                    //inputImage.put(floatToByteArray(((value shr 16 and 0xFF) - mean) / std))
+                    //inputImage.put(floatToByteArray(((value shr 8 and 0xFF) - mean) / std))
+                    //inputImage.put(floatToByteArray(((value and 0xFF) - mean) / std))
+
+                    /*inputImage.put(floatToByteArray(Color.red(value) / 255.0f))
+                    inputImage.put(floatToByteArray(Color.green(value) / 255.0f))
+                    inputImage.put(floatToByteArray(Color.blue(value) / 255.0f))*/
                 }
             }
 
-            //inputImage.rewind()
             return inputImage
+        }
+
+        fun floatToByteArray(value: Float): ByteArray {
+            val intBits = java.lang.Float.floatToIntBits(value)
+            return byteArrayOf(
+                (intBits shr 24).toByte(),
+                (intBits shr 16).toByte(),
+                (intBits shr 8).toByte(),
+                intBits.toByte()
+            )
         }
 
         fun bitmapToFloatArray(bitmap: Bitmap):

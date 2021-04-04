@@ -64,18 +64,23 @@ class DepthAndStyleModelExecutor(
             // So we go with plain array inputs and outputs
 
             preProcessTime = SystemClock.uptimeMillis()
-            //var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/agray.jpg")
-            //val inputStyle = ImageUtils.bitmapToByteBuffer(loadedBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
-            val loadedBitmap = Bitmap.createScaledBitmap(
-                contentImage,
+
+            // Use ByteBuffer
+            var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
+            val inputStyle = ImageUtils.bitmapToByteBuffer(loadedBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
+
+            // Use FloatArray
+            /*var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
+            loadedBitmap = Bitmap.createScaledBitmap(
+                loadedBitmap,
                 CONTENT_IMAGE_SIZE,
                 CONTENT_IMAGE_SIZE,
                 true
             )
 
             // Convert Bitmap to Float array
-            val inputStyle = ImageUtils.bitmapToFloatArray(loadedBitmap)
-            Log.i(TAG, inputStyle[0][0][0].contentToString())
+            val inputStyle = ImageUtils.bitmapToFloatArray(loadedBitmap)*/
+            //Log.i(TAG, inputStyle[0][0][0].contentToString())
 
             // Create an output array with size 1,1,384,384
             val outputs = Array(1) {

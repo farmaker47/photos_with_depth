@@ -209,7 +209,6 @@ abstract class ImageUtils {
                     //val value = intValues[pixel++]
                     val value = intValues[x * width + y]
 
-
                     //inputImage.putFloat(((value shr 16 and 0xFF) - mean) / std)
                     //inputImage.putFloat(((value shr 8 and 0xFF) - mean) / std)
                     inputImage.putFloat(((value and 0xFF) - mean) / std)

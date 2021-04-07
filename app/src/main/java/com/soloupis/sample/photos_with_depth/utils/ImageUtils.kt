@@ -209,10 +209,11 @@ abstract class ImageUtils {
                     //val value = intValues[pixel++]
                     val value = intValues[x * width + y]
 
-
+                    // Use only one of the 3 channels
+                    // Use Color.red instead of (value shr 16 and 0xFF) because it is faster
                     //inputImage.putFloat(((value shr 16 and 0xFF) - mean) / std)
                     //inputImage.putFloat(((value shr 8 and 0xFF) - mean) / std)
-                    inputImage.putFloat(((value and 0xFF) - mean) / std)
+                    inputImage.putFloat(((Color.red(value)) - mean) / std)
 
                     //inputImage.put(floatToByteArray(((value shr 16 and 0xFF) - mean) / std))
                     //inputImage.put(floatToByteArray(((value shr 8 and 0xFF) - mean) / std))

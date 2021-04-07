@@ -6,7 +6,6 @@ import android.os.SystemClock
 import android.util.Log
 import com.soloupis.sample.photos_with_depth.utils.ImageUtils
 import org.tensorflow.lite.Interpreter
-import org.tensorflow.lite.gpu.GpuDelegate
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
@@ -36,7 +35,7 @@ class DepthAndStyleModelExecutor(
     private var styleTransferTime = 0L
     private var postProcessTime = 0L
     private var interpreterDepth: Interpreter
-    private lateinit var gpuDelegate: GpuDelegate
+    //private lateinit var gpuDelegate: GpuDelegate
 
     companion object {
         private const val TAG = "PhotosWithDepthProcedure"
@@ -152,8 +151,8 @@ class DepthAndStyleModelExecutor(
     ): Interpreter {
         val tfliteOptions = Interpreter.Options()
         if (useGpu) {
-            gpuDelegate = GpuDelegate()
-            tfliteOptions.addDelegate(gpuDelegate)
+            //gpuDelegate = GpuDelegate()
+            //tfliteOptions.addDelegate(gpuDelegate)
 
             // Create the Delegate instance.
             /*try {

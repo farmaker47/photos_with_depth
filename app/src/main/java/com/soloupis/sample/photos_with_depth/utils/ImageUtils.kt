@@ -204,26 +204,27 @@ abstract class ImageUtils {
             val intValues = IntArray(width * height)
             bitmap.getPixels(intValues, 0, width, 0, 0, width, height)
             var pixel = 0
-            for (x in 0 until width) {
-                for (y in 0 until height) {
-                    //val value = intValues[pixel++]
-                    val value = intValues[x * width + y]
+            for (i in 0 until 3) {
+                for (x in 0 until width) {
+                    for (y in 0 until height) {
+                        //val value = intValues[pixel++]
+                        val value = intValues[x * width + y]
+                        when (i) {
+                            0 -> {
+                                inputImage.putFloat(((Color.red(value)) - mean) / std)
+                            }
+                            1 -> {
+                                inputImage.putFloat(((Color.green(value)) - mean) / std)
+                            }
+                            else -> {
+                                inputImage.putFloat(((Color.blue(value)) - mean) / std)
+                            }
+                        }
 
-                    // Use only one of the 3 channels
-                    // Use Color.red instead of (value shr 16 and 0xFF) because it is faster
-                    //inputImage.putFloat(((value shr 16 and 0xFF) - mean) / std)
-                    //inputImage.putFloat(((value shr 8 and 0xFF) - mean) / std)
-                    inputImage.putFloat(((Color.red(value)) - mean) / std)
-
-                    //inputImage.put(floatToByteArray(((value shr 16 and 0xFF) - mean) / std))
-                    //inputImage.put(floatToByteArray(((value shr 8 and 0xFF) - mean) / std))
-                    //inputImage.put(floatToByteArray(((value and 0xFF) - mean) / std))
-
-                    /*inputImage.put(floatToByteArray(Color.red(value) / 255.0f))
-                    inputImage.put(floatToByteArray(Color.green(value) / 255.0f))
-                    inputImage.put(floatToByteArray(Color.blue(value) / 255.0f))*/
+                    }
                 }
             }
+
 
             return inputImage
         }

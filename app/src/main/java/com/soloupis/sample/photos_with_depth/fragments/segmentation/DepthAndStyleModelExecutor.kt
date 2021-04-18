@@ -69,7 +69,7 @@ class DepthAndStyleModelExecutor(
             val inputStyle = ImageUtils.bitmapToByteBuffer(loadedBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
 
             // Use FloatArray
-            /*var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
+           /* var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
             loadedBitmap = Bitmap.createScaledBitmap(
                 loadedBitmap,
                 CONTENT_IMAGE_SIZE,

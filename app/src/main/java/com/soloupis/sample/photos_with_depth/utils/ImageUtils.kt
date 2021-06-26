@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -204,22 +204,24 @@ abstract class ImageUtils {
             val intValues = IntArray(width * height)
             bitmap.getPixels(intValues, 0, width, 0, 0, width, height)
             var pixel = 0
-            for (x in 0 until width) {
-                for (y in 0 until height) {
-                    //val value = intValues[pixel++]
-                    val value = intValues[x * width + y]
+            for (i in 0 until 3) {
+                for (x in 0 until width) {
+                    for (y in 0 until height) {
+                        //val value = intValues[pixel++]
+                        val value = intValues[x * width + y]
+                        when (i) {
+                            0 -> {
+                                inputImage.putFloat(((Color.red(value)) - mean) / std)
+                            }
+                            1 -> {
+                                inputImage.putFloat(((Color.green(value)) - mean) / std)
+                            }
+                            else -> {
+                                inputImage.putFloat(((Color.blue(value)) - mean) / std)
+                            }
+                        }
 
-                    //inputImage.putFloat(((value shr 16 and 0xFF) - mean) / std)
-                    //inputImage.putFloat(((value shr 8 and 0xFF) - mean) / std)
-                    inputImage.putFloat(((value and 0xFF) - mean) / std)
-
-                    //inputImage.put(floatToByteArray(((value shr 16 and 0xFF) - mean) / std))
-                    //inputImage.put(floatToByteArray(((value shr 8 and 0xFF) - mean) / std))
-                    //inputImage.put(floatToByteArray(((value and 0xFF) - mean) / std))
-
-                    /*inputImage.put(floatToByteArray(Color.red(value) / 255.0f))
-                    inputImage.put(floatToByteArray(Color.green(value) / 255.0f))
-                    inputImage.put(floatToByteArray(Color.blue(value) / 255.0f))*/
+                    }
                 }
             }
 
@@ -332,8 +334,8 @@ abstract class ImageUtils {
                 }
             }
 
-            val maxValue: Float = oneDFloatArray.max() ?: 0f
-            val minValue: Float = oneDFloatArray.min() ?: 0f
+            val maxValue: Float = oneDFloatArray.maxOrNull() ?: 0f
+            val minValue: Float = oneDFloatArray.minOrNull() ?: 0f
 
             val conf = Bitmap.Config.ARGB_8888 // see other conf types
             val grayToneImage = Bitmap.createBitmap(imageWidth, imageHeight, conf)

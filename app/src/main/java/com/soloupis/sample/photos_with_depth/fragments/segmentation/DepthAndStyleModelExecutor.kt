@@ -6,7 +6,6 @@ import android.os.SystemClock
 import android.util.Log
 import com.soloupis.sample.photos_with_depth.utils.ImageUtils
 import org.tensorflow.lite.Interpreter
-import org.tensorflow.lite.gpu.GpuDelegate
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
@@ -36,7 +35,7 @@ class DepthAndStyleModelExecutor(
     private var styleTransferTime = 0L
     private var postProcessTime = 0L
     private var interpreterDepth: Interpreter
-    private lateinit var gpuDelegate: GpuDelegate
+    //private lateinit var gpuDelegate: GpuDelegate
 
     companion object {
         private const val TAG = "PhotosWithDepthProcedure"
@@ -66,20 +65,20 @@ class DepthAndStyleModelExecutor(
             preProcessTime = SystemClock.uptimeMillis()
 
             // Use ByteBuffer
-            /*var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
-            val inputStyle = ImageUtils.bitmapToByteBuffer(loadedBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)*/
+            //var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
+            val inputStyle = ImageUtils.bitmapToByteBuffer(contentImage, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
 
             // Use FloatArray
-            //var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
-            var loadedBitmap = Bitmap.createScaledBitmap(
-                contentImage,
+           /* var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
+            loadedBitmap = Bitmap.createScaledBitmap(
+                loadedBitmap,
                 CONTENT_IMAGE_SIZE,
                 CONTENT_IMAGE_SIZE,
                 true
             )
 
             // Convert Bitmap to Float array
-            val inputStyle = ImageUtils.bitmapToFloatArray(loadedBitmap)
+            val inputStyle = ImageUtils.bitmapToFloatArray(loadedBitmap)*/
             //Log.i(TAG, inputStyle[0][0][0].contentToString())
 
             // Create an output array with size 1,1,384,384
@@ -152,8 +151,8 @@ class DepthAndStyleModelExecutor(
     ): Interpreter {
         val tfliteOptions = Interpreter.Options()
         if (useGpu) {
-            gpuDelegate = GpuDelegate()
-            tfliteOptions.addDelegate(gpuDelegate)
+            //gpuDelegate = GpuDelegate()
+            //tfliteOptions.addDelegate(gpuDelegate)
 
             // Create the Delegate instance.
             /*try {
@@ -171,6 +170,7 @@ class DepthAndStyleModelExecutor(
         tfliteOptions.setNumThreads(numberThreads)
         //tfliteOptions.setUseXNNPACK(true)
         return Interpreter(loadModelFile(context, modelName), tfliteOptions)
+        //return Interpreter(context.assets.openFd(DEPTH_MODEL),tfliteOptions)
     }
 
     private fun formatExecutionLog(): String {

@@ -335,8 +335,8 @@ abstract class ImageUtils {
                 }
             }
 
-            val maxValue: Float = oneDFloatArray.max() ?: 0f
-            val minValue: Float = oneDFloatArray.min() ?: 0f
+            val maxValue: Float = oneDFloatArray.maxOrNull() ?: 0f
+            val minValue: Float = oneDFloatArray.minOrNull() ?: 0f
 
             val conf = Bitmap.Config.ARGB_8888 // see other conf types
             val grayToneImage = Bitmap.createBitmap(imageWidth, imageHeight, conf)

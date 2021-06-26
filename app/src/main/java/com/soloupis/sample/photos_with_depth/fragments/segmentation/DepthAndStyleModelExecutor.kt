@@ -65,8 +65,8 @@ class DepthAndStyleModelExecutor(
             preProcessTime = SystemClock.uptimeMillis()
 
             // Use ByteBuffer
-            var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
-            val inputStyle = ImageUtils.bitmapToByteBuffer(loadedBitmap, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
+            //var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
+            val inputStyle = ImageUtils.bitmapToByteBuffer(contentImage, CONTENT_IMAGE_SIZE, CONTENT_IMAGE_SIZE)
 
             // Use FloatArray
            /* var loadedBitmap = ImageUtils.loadBitmapFromResources(context, "thumbnails/moon.jpg")
@@ -170,6 +170,7 @@ class DepthAndStyleModelExecutor(
         tfliteOptions.setNumThreads(numberThreads)
         //tfliteOptions.setUseXNNPACK(true)
         return Interpreter(loadModelFile(context, modelName), tfliteOptions)
+        //return Interpreter(context.assets.openFd(DEPTH_MODEL),tfliteOptions)
     }
 
     private fun formatExecutionLog(): String {

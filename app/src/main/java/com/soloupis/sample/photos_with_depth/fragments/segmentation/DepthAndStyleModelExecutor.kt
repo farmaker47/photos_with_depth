@@ -168,6 +168,7 @@ class DepthAndStyleModelExecutor(
         }
 
         tfliteOptions.setNumThreads(numberThreads)
+        tfliteOptions.setUseXNNPACK(true)
         //tfliteOptions.setUseXNNPACK(true)
         return Interpreter(loadModelFile(context, modelName), tfliteOptions)
         //return Interpreter(context.assets.openFd(DEPTH_MODEL),tfliteOptions)
